@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class WrapperappConfig(AppConfig):
+class SpotifyAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'wrapperapp'
+    name = 'spotify_app'
