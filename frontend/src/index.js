@@ -4,12 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import  {BrowserRouter as Router} from 'react-router-dom';
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+import "./App.css";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Router>
     <React.StrictMode>
-     <App />
+    <Theme>
+     <App/>
+     </Theme>
     </React.StrictMode>
   </Router>
 );
