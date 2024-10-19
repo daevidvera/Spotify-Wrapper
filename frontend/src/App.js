@@ -11,10 +11,6 @@ function App() {
       <Routes>
         <Route path="/" element= {<LoginPage/>}/>
       </Routes>
-      <div class="container">
-        <div class="App-background">    
-        </div> 
-      </div>
     </div>
   );
 }
