@@ -1,26 +1,28 @@
 import React from 'react';
-import { Button } from '@radix-ui/themes';
-import { useNavigate } from 'react-router-dom';
+
+const CLIENT_ID = "7e9e20008d354b2aaf9a3653d7b2b393"
+const SPOTIFY_AUTH = 'https://accounts.spotify.com/authorize';
+const REDIRECT_URI = 'http://localhost:3000/'
 
 function LoginPage() {
-  const navigation = useNavigate();
 
-  const handleClick = () => {
-    navigation("/profilePage");
+  const handleLogin = () => {
+    window.location = `${SPOTIFY_AUTH}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&show_dialog=true`
 
   }
 
   return (
-    <div>
-      <div className="container-login">
-        <img src={`${process.env.PUBLIC_URL}/logo spotify wrapper.png`} alt="Logo" className="logo" />
-        <div className='spotify-button'>
-          <Button radius="full" variant="soft" onClick={handleClick}>
-            Log in with your Spotify account
-          </Button>
-        </div>
-      </div>
-    </div>
+    <article className='logoCard'>
+       <h1 className="logoCard-logo"> @wrapper. </h1>
+            <aside>
+              <button className='logoCard-Button' onClick={handleLogin}>
+              Spotify account
+            </button>
+
+            </aside>
+    </article>
+    
+    
   );
 }
 
