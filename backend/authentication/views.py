@@ -10,7 +10,7 @@ import urllib.parse
 import base64
 import requests
 
-# Create your views here.
+# Contains API that handles Spotify authorization
 
 # Helper function used to print error messages
 def printError(msg):
@@ -50,7 +50,7 @@ def auth_url(request):
 
 
 # Handles Spotify authorization callback
-class AuthorizationCallbackView(APIView):
+class AuthenticationCallbackView(APIView):
 
     def get(self, request):
         error = request.GET.get('error') # Can be None
@@ -92,7 +92,7 @@ class AuthorizationCallbackView(APIView):
         access_token = response.get('access_token')
         refresh_token = response.get('refresh_token')
 
-        # Check if user's id is registered in database. If not, register the user
+        # Retrieve user id for login/registration
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -107,8 +107,9 @@ class AuthorizationCallbackView(APIView):
         response = response.json()
         uid = response.get('id')
 
+        # Check if user is registered in database
         print(uid)
         print(response.get('display_name'))
         return Response({'message': f'Retrieved user :{uid}'}, status=status.HTTP_200_OK)
-
+    
 

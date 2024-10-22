@@ -22,6 +22,6 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("api.urls")), # API routes
+    path("api/auth/", include("authentication.urls")), # Authorization API
     path("", TemplateView.as_view(template_name="index.html")) # Only serve index; let React Router do the rest
 ]
