@@ -2,6 +2,7 @@ import '../styles/Login.css'
 import { Stack } from '@mui/material'
 import Button from '@mui/material/Button';
 import axios from 'axios'
+import { Typography }  from '@mui/material'
 
 // Login page
 
@@ -35,12 +36,23 @@ function Login() {
     return (
         <Stack 
             sx={{
+                display: 'flex',
                 justifyContent: 'center', 
                 alignItems: 'center',
-                height: '100%'
+                height: '100%',
+                paddingTop: '350px',
             }}
         >
-            <h1> @wrapper.</h1>
+            <Typography 
+            variant='h1'
+            sx = {{
+                fontSize: '50px',          // font-size
+                fontFamily: '"League Spartan", sans-serif',  // font-family
+                fontWeight: 900  
+            }}
+            >
+                @wrapper.
+            </Typography>
             <Button variant='text' onClick={handleLogin}> Sign in with Spotify </Button>
         </Stack>
     )
