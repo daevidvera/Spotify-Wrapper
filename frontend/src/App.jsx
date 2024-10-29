@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import theme from './Theme'
 import Login from './routes/Login'
 import { ThemeProvider } from '@mui/material'
+import DarkMode from './DarkMode'
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -11,12 +12,12 @@ import { ThemeProvider } from '@mui/material'
 function App() {
 
   return (
-    <ThemeProvider theme={theme}>
+      <DarkMode>
       <Routes>
         <Route path='/login' element={<Login />}/>
         
       </Routes>
-    </ThemeProvider>
+      </DarkMode>
   )
 
 }

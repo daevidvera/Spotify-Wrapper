@@ -1,11 +1,15 @@
 /* Global CSS Variables */
 
 :root {
-  --light-gradient: linear-gradient(180deg, #ffffff, #9CD8EE); 
+ --light-gradient: linear-gradient(180deg, #ffffff, #9CD8EE);
   --dark-gradient: linear-gradient(180deg, #101517, #226DBD);
+  --background: var(--dark-gradient); /* Default */
 }
 
 #root {
   width: 100%;
   height: 100%;
+}
+body {
+  background: var(--background);
 }

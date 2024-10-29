@@ -1,3 +1,4 @@
+/*
 body {
     background-image: var(--light-gradient);
     background-repeat: no-repeat;
@@ -8,4 +9,41 @@ h1 {
     font-size: 50px;
     font-family: "League Spartan", sans-serif;
     font-weight: 900;
+}*/
+body {
+    background-image: var(--background); /* Use the --background variable for dynamic theming */
+    background-repeat: no-repeat;
+    background-size: cover;   
+    transition: background 0.3s ease; /* Smooth transition for background change */
+}
+
+h1 {
+    font-size: 50px;
+    font-family: "League Spartan", sans-serif;
+    font-weight: 900;
+    color: black; /* Light text for dark mode, adjust based on mode */
+}
+
+/* Optional: Additional styles for paragraphs or other elements */
+p {
+    color: #ccc; /* Default color for text in dark mode */
+    transition: color 0.3s ease; /* Smooth transition for text color change */
+}
+
+/* Add a class for light mode styles */
+.light-mode h1,
+.light-mode p {
+    color: black; /* Change text color to black for light mode */
+}
+
+.light-mode {
+    background-image: var(--light-gradient); /* Light gradient for light mode */
+}
+.dark-mode {
+    background-image: var(--dark-gradient); /* Dark gradient for dark mode */
+}
+
+.dark-mode h1,
+.dark-mode p {
+    color: white; /* Text color for dark mode */
 }
