@@ -8,8 +8,7 @@ const theme = createTheme({
         MuiCssBaseline: { // this is the global css variable
             styleOverrides: { //overriding styles
                 ":root" :{
-                   "--light-gradient": "linear-gradient(180deg, #ffffff, #9CD8EE)",
-                    "--dark-gradient": "linear-gradient(180deg, #101517, #226DBD)",
+                  background: '#FFFF'
                 },
 
                 "#root": {
