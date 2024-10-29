@@ -3,6 +3,7 @@ import { Stack } from '@mui/material'
 import Button from '@mui/material/Button';
 import axios from 'axios'
 import { Typography }  from '@mui/material'
+import Logo from '../components/Logo';
 
 // Login page
 
@@ -43,17 +44,8 @@ function Login() {
                 paddingTop: '350px',
             }}
         >
-            <Typography 
-            variant='h1'
-            sx = {{
-                fontSize: '50px',          // font-size
-                fontFamily: '"League Spartan", sans-serif',  // font-family
-                fontWeight: 900  
-            }}
-            >
-                @wrapper.
-            </Typography>
-            <Button variant='text' onClick={handleLogin}> Sign in with Spotify </Button>
+            <Logo fontSize='50px' />
+            <Button  sx = {{ color: "#65558F" }}variant='text' onClick={handleLogin}> Sign in with Spotify </Button>
         </Stack>
     )
 }

@@ -24,6 +24,16 @@ const theme = createTheme({
             },
         },
     },
+    MuiButton: {
+        styleOverrides: {
+            root: {
+                fontFamily: '"League Spartan", sans-serif',  // font-family
+                fontWeight: 900
+            },
+        },
+
+    },
+    
 });
 
 export default theme;

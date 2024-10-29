@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import theme from './Theme'
 import Login from './routes/Login'
 import { CssBaseline, ThemeProvider } from '@mui/material'
+import MainPage from './routes/MainPage'
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -16,6 +17,7 @@ function App() {
       <CssBaseline />        
       <Routes>
         <Route path='/login' element={<Login />}/>
+        <Route path='/main' element={< MainPage/>}/>
         
       </Routes>
     </ThemeProvider>
