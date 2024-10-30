@@ -11,7 +11,18 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
 
     return (
         <ThemeProvider theme={theme}>
-            <AppBar position="static" sx={{ backgroundColor: "#FFFF", color: "black" }}>
+            <AppBar position="static" 
+            sx=
+            {{ 
+                backgroundColor: "#FFFF", 
+                color: "black", 
+                padding: "8px 98px",
+                boxShadow: "none",
+                borderBottom: "1px solid #DEE5ED"
+                
+
+            
+            }}>
                 <Toolbar>
                     <Logo fontSize="30px" />
 
