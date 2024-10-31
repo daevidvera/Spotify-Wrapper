@@ -6,6 +6,7 @@ import Logo from '../components/Logo';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 
 const ProfilePage = () => {
+    
   const [userData, setUserData] = useState({ username: '@UserID', friendCount: 0 }); // Sample user data
 
   useEffect(() => {
@@ -23,18 +24,8 @@ const ProfilePage = () => {
   }, []);
 
   return (
-      <div
-          className="ProfilePrevWrepsPage"
-          style={{
-              width: '100%' ,
-              maxWidth: 1280,
-              height: '100vh',
-              position: 'relative',
-              background: 'white',
-              paddingLeft: '20px',
-          }}
-      >
-          <NavBar buttons={["Home", "Contact", "Profile", "Sign Out"]} />
+      <Box>
+          <NavBar buttons={["Home", "Contact", "Sign Out"]} />
             <Box
                 sx={{
                     display: 'flex',
@@ -42,6 +33,7 @@ const ProfilePage = () => {
                     alignItems: 'flex-start', // Align items to the left
                     width: '100%',
                     maxWidth: { xs: '300px', sm: '400px', md: '600px', lg: '800px' },
+                    paddingLeft: 5,
                     marginTop: { xs: 4, sm: 6, md: 8 },
                 }}
             >
@@ -184,10 +176,10 @@ const ProfilePage = () => {
                   My Wraps
               </div>
           </Box>
-      </div>
+      </Box>
   );
 };
 
 export default ProfilePage;
 
-<div className="Frame6" style={{height: 157, left: 66, top: 396, position: 'absolute', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 15, display: 'inline-flex'}}></div>
+
