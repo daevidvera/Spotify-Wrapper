@@ -25,7 +25,7 @@ function MainPage() {
                     sx={{
                         display: "flex",
                         flexDirection: "column", // Stack the elements vertically
-                        alignItems: "center", // Center-align items
+                        alignItems: "center", 
                         width: "100%",
                         maxWidth: { xs: '300px', sm: '400px', md: '600px', lg: '800px' }, // Responsive width for the container
                         marginTop: { xs: 8, sm: 10, md: 12 }, // Space at the top for positioning
@@ -38,8 +38,8 @@ function MainPage() {
                             fontFamily: '"League Spartan", sans-serif',
                             fontWeight: 900,
                             fontSize: { xs: "2rem", sm: "3rem", md: "4rem", lg: "5rem" }, // Responsive font size
-                            textAlign: "center",
-                            marginBottom: { xs: 4, sm: 5, md: 6 } // Space below the message
+                            textAlign: { xs: "center", sm: "center", md: "left", lg: "left"},
+                            marginBottom: { xs: 4, sm: 5, md: 6 } 
                         }}
                     >
                         Welcome @user!
