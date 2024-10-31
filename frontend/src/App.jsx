@@ -5,6 +5,7 @@ import Login from './routes/Login'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import MainPage from './routes/MainPage'
 import CreateAccount from './routes/CreateAccount'
+import ProfilePage from './routes/ProfilePage'
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -20,6 +21,7 @@ function App() {
         <Route path='/login' element={<Login />}/>
         <Route path='/main' element={<MainPage/>}/>
         <Route path='/account' element = {<CreateAccount/>}/>
+        <Route path='/profile' element={<ProfilePage />} />
         
       </Routes>
     </ThemeProvider>
