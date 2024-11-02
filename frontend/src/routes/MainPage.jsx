@@ -8,27 +8,27 @@ function MainPage() {
     return (
         <Box>
             {/* Navbar at the top */}
-            <NavBar buttons={["Home", "Contact", "Profile", "Sign Out"]} />
+            <NavBar buttons={["Contact", "Profile", "Sign Out"]} />
 
             {/* Content area below Navbar */}
             <Box
                 sx={{
                     display: 'flex',
-                    justifyContent: { xs: 'center', md: "center", lg: 'flex-end' },
+                    justifyContent: { xs: 'center', md: "center", lg: 'center' },
                     alignItems: 'center',
                     p: { xs: 2, md: 5 } // Responsive padding
                 }}
             >
 
-                {/* Container for Welcome message and button stack */}
+                {/* Container lol  */}
                 <Box
                     sx={{
                         display: "flex",
-                        flexDirection: "column", // Stack the elements vertically
+                        flexDirection: "column", 
                         alignItems: "center", 
                         width: "100%",
-                        maxWidth: { xs: '300px', sm: '400px', md: '600px', lg: '800px' }, // Responsive width for the container
-                        marginTop: { xs: 8, sm: 10, md: 12 }, // Space at the top for positioning
+                        maxWidth: { xs: '300px', sm: '400px', md: '600px', lg: '800px' }, 
+                        marginTop: { xs: 8, sm: 10, md: 12 }, 
                     }}
                 >
                     {/* Welcome message */}
@@ -37,7 +37,7 @@ function MainPage() {
                         sx={{
                             fontFamily: '"League Spartan", sans-serif',
                             fontWeight: 900,
-                            fontSize: { xs: "2rem", sm: "3rem", md: "4rem", lg: "5rem" }, // Responsive font size
+                            fontSize: { xs: "2rem", sm: "3rem", md: "4rem", lg: "5rem" }, 
                             textAlign: { xs: "center", sm: "center", md: "left", lg: "left"},
                             marginBottom: { xs: 4, sm: 5, md: 6 } 
                         }}
@@ -45,12 +45,12 @@ function MainPage() {
                         Welcome @user!
                     </Typography>
 
-                    {/* Button Stack */}
+                    {/* Stack */}
                     <Stack
                         spacing={4} 
                         sx={{
                             width: '100%',
-                            alignItems: 'center', // Center-aligns buttons within the Stack
+                            alignItems: 'center', 
                             maxWidth: { xs: '300px', sm: '400px', md: '500px', lg: '600px' },
                         }}
                     >
