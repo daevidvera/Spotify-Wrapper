@@ -23,6 +23,10 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
         navigate('/login');
     }
 
+    const navigateContact = () => {
+        navigate('/contact');
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <AppBar position="static" 
@@ -51,7 +55,7 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                                 <Button onClick={navigateHome} sx={{ color: '#486284', fontWeight: 900 }}>Home</Button>
                             )}
                             {buttons.includes("Contact") && (
-                                <Button sx={{ color: '#486284', fontWeight: 900 }}>Contact</Button>
+                                <Button onClick={navigateContact} sx={{ color: '#486284', fontWeight: 900 }}>Contact</Button>
                             )}
                             {buttons.includes("Profile") && (
                                 <IconButton onClick={navigateProfile} sx={{ color: "#486284" }}>
