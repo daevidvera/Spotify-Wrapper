@@ -27,6 +27,9 @@ function Login() {
     const navigateAccount = () => {
         navigate('/account');
     }
+    const navigateSignIn = () => {
+        navigate('/signin');
+    };
 
     // We use Stack to center our login components
 
@@ -57,7 +60,7 @@ function Login() {
 
 
              }}
-             variant='outlined'> Log in </Button>
+             variant='outlined' onClick={navigateSignIn}> Sign In </Button>
              </Fade>
 
 
