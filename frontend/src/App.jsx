@@ -7,6 +7,10 @@ import MainPage from './routes/MainPage'
 import CreateAccount from './routes/CreateAccount'
 import ProfilePage from './routes/ProfilePage'
 import SignIn from './routes/SignIn'
+import ContactPage from './routes/ContactPage';
+import DuoWrapped from './routes/duoWrapped'
+import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
+
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -24,6 +28,10 @@ function App() {
         <Route path='/account' element = {<CreateAccount/>}/>
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/signin' element={<SignIn />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/duo" element={<DuoWrapped/>} />
+        <Route path="/duofriend" element={<DuoWrappedMainPage/>} />
+
         
       </Routes>
     </ThemeProvider>

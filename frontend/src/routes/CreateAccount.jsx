@@ -8,9 +8,8 @@ import Button from "@mui/material/Button";
 import axios from 'axios'
 import theme from "../Theme";
 import { ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from 'react-router-dom'
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom'
 
 function handleAccountAuth() {
     
