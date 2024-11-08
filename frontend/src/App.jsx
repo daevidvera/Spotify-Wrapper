@@ -7,6 +7,9 @@ import MainPage from './routes/MainPage'
 import CreateAccount from './routes/CreateAccount'
 import ProfilePage from './routes/ProfilePage'
 import ContactPage from './routes/ContactPage';
+import TopSongs from './routes/TopSongs';
+import TopArtists from './routes/TopArtists'
+import TopGenres from './routes/TopGenres'
 
 
 // Initializes core app wrappers
@@ -25,6 +28,11 @@ function App() {
         <Route path='/account' element = {<CreateAccount/>}/>
         <Route path='/profile' element={<ProfilePage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path='/topSongs' element={<TopSongs />} />
+        <Route path='/topArtists' element={<TopArtists />} />
+        <Route path='/topGenres' element={<TopGenres />} />
+
+
         
       </Routes>
     </ThemeProvider>
