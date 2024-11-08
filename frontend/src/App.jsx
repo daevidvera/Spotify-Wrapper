@@ -6,10 +6,10 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import MainPage from './routes/MainPage'
 import CreateAccount from './routes/CreateAccount'
 import ProfilePage from './routes/ProfilePage'
+import SignIn from './routes/SignIn'
 import ContactPage from './routes/ContactPage';
-import TopSongs from './routes/TopSongs';
-import TopArtists from './routes/TopArtists'
-import TopGenres from './routes/TopGenres'
+import DuoWrapped from './routes/duoWrapped'
+import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
 
 
 // Initializes core app wrappers
@@ -27,11 +27,10 @@ function App() {
         <Route path='/main' element={<MainPage/>}/>
         <Route path='/account' element = {<CreateAccount/>}/>
         <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/signin' element={<SignIn />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path='/topSongs' element={<TopSongs />} />
-        <Route path='/topArtists' element={<TopArtists />} />
-        <Route path='/topGenres' element={<TopGenres />} />
-
+        <Route path="/duo" element={<DuoWrapped/>} />
+        <Route path="/duofriend" element={<DuoWrappedMainPage/>} />
 
         
       </Routes>
