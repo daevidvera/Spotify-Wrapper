@@ -10,6 +10,9 @@ import SignIn from './routes/SignIn'
 import ContactPage from './routes/ContactPage';
 import DuoWrapped from './routes/duoWrapped'
 import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
+import TopGenres from './routes/TopGenres'
+import TopSongs from './routes/TopSongs'
+import TopArtists from './routes/TopArtists'
 
 
 // Initializes core app wrappers
@@ -31,6 +34,10 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/duo" element={<DuoWrapped/>} />
         <Route path="/duofriend" element={<DuoWrappedMainPage/>} />
+        <Route path="/topgenres" element={<TopGenres/>} />
+        <Route path="/topsongs" element={<TopSongs/>} />
+        <Route path="/topartists" element={<TopArtists/>} />
+
 
         
       </Routes>
