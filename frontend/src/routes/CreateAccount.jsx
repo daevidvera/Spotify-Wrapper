@@ -1,4 +1,3 @@
-
 import Logo from "../components/Logo";
 import { AppBar, Stack } from "@mui/material";
 import Fade from '@mui/material/Fade';

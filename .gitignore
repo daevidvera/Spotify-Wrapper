@@ -80,3 +80,7 @@ target/
 
 # Python Version
 .python-version
+
+# Nodes modules
+node_modules/
+frontend/node_modules/
