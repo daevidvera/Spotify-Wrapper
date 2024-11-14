@@ -46,7 +46,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
+backend/backend/.env/
 build/
 develop-eggs/
 dist/
@@ -77,3 +77,6 @@ coverage.xml
 
 # PyBuilder
 target/
+
+# Python Version
+.python-version

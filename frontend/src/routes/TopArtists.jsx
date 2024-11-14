@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const TopArtists = () => {
+
     const topArtists = [
         { id: 1, name: 'Artist Name 1' },
         { id: 2, name: 'Artist Name 2' },
