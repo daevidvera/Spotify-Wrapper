@@ -5,13 +5,28 @@ import Logo from '../components/Logo';
 import { useNavigate } from 'react-router-dom'
 import Fade from '@mui/material/Fade';
 import React, { useEffect, useState } from "react";
+import axios from 'axios'
 
 // Login page
 
 // Computer compatible: ✅
 // Mobile compatible: ✅
 
+// Handle Spotify auth before creating account
+const navigateSpotifyAuth = () => {
+    axios.get('/api/auth/url', { withCredentials: true })
 
+    // Redirect to authorization url
+    .then(res => res.data)
+    .then(data => data.auth_url)
+    .then(authUrl => window.location = authUrl)
+
+    // Print any errors
+    .catch(error => {
+        console.error(error)
+        window.alert('An error has occurred when reaching Spotify. See console for more details')
+    })
+}
 
 function Login() {
 
@@ -23,10 +38,7 @@ function Login() {
 
     // On click Part
     const navigate = useNavigate();
-
-    const navigateAccount = () => {
-        navigate('/account');
-    }
+    
     const navigateSignIn = () => {
         navigate('/signin');
     };
@@ -73,7 +85,7 @@ function Login() {
                 borderRadius: "90px"
         
             }}
-            variant='outlined' onClick={navigateAccount}> Create Account </Button>
+            variant='outlined' onClick={navigateSpotifyAuth}> Create Account </Button>
             </Fade>
         </Stack>
     )
