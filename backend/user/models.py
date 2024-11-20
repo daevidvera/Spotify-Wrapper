@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 
+
 class User(AbstractUser):
-    
+
     # Required fields
     # username - automatically created
     # password - automatically created
@@ -15,7 +16,7 @@ class User(AbstractUser):
 
     # Extra fields
     spotify_profile_url = models.URLField(blank=True, null=True)            # Spotify profile url 
-    profile_img = models.JSONField(default=dict, blank=True, null=True)     # Spotify profile pic, as a json containing url, width, & height (in px)
+    profile_img = models.JSONField(default=dict, blank=True, null=True)     # Spotify profile pic url
 
     # Auto generated fields
     # last_login: automatically handled by django

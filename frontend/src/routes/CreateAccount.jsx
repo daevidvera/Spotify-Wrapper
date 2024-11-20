@@ -10,7 +10,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import Snackbar from '@mui/material/Snackbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation } from 'react-router-dom'
-import SpotifyPreview from "../components/SpotifyProfile";
+import SpotifyPreview from "../components/SpotifyPreview";
 
 
 function CreateAccount() {
@@ -22,22 +22,15 @@ function CreateAccount() {
     
     // ONCE Davi gives me access to API so I can add myself, uncomment this!!!
     const searchParams = Object.fromEntries(new URLSearchParams(location.search));
-    // const searchParams = {
-    //     display_name: 'Ato',
-    //     spotify_profile_url: 'https://open.spotify.com/user/epicguys2627',
-    //     email: 'alberticoalvarez123@gmail.com',
-    //     profile_img: 'https://i.scdn.co/image/ab6775700000ee859778ae6e04a23fcc5b7cbda1'
-    // }
-
     const [formData, setFormData] = useState({
-        username: searchParams['display_name'] || "",
-        email: searchParams['email'] || "",
+        username: searchParams['display_name'],
+        email: searchParams['email'],
         password: "",
         password2: ""
     })
 
-    const [serverError, setServerError] = useState(false)
-    const dismissServerError = () => setServerError(false)
+    const [serverError, setServerError] = useState('')
+    const dismissServerErrors = () => setServerError('')
 
     const [formErrors, setFormErrors] = useState({})
 
@@ -58,7 +51,6 @@ function CreateAccount() {
         .then(res => {navigate('/profile')})
         .catch(ex => {
             const res = ex.response
-            console.log(res)
             if(res && res.status === 400)
                 setFormErrors(res.data)
             else {
@@ -71,11 +63,11 @@ function CreateAccount() {
         <ThemeProvider theme = {theme}>
 
         <Snackbar 
-            open={typeof serverError === 'string'}
+            open={serverError.length !== 0}
             autoHideDuration={5000}
-            onClose={dismissServerError}
+            onClose={dismissServerErrors}
             anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-            message={serverError || ""}
+            message={serverError}
         />
 
         <Button 
