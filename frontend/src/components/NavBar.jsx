@@ -1,5 +1,5 @@
-import React from "react";
-import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery } from "@mui/material";
+import React, { useState } from "react";
+import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logo from "./Logo";
 import { ThemeProvider } from "@emotion/react";
@@ -10,21 +10,26 @@ import { useNavigate } from 'react-router-dom'
 function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // buttons prop with default value
     const isMobile = useMediaQuery('(max-width:600px)');
     const navigate = useNavigate();
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const navigateProfile = () => {
         navigate('/profile');
+        setDrawerOpen(false);
     }
 
     const navigateHome = () => {
         navigate('/main');
+        setDrawerOpen(false);
     }
 
     const navigateSignOut = () => {
         navigate('/login');
+        setDrawerOpen(false);
     }
 
     const navigateContact = () => {
         navigate('/contact');
+        setDrawerOpen(false);
     }
 
     return (
@@ -45,9 +50,48 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                     <Logo fontSize="30px" />
 
                     {isMobile ? (
-                        <IconButton edge="end" color="#FFFF" aria-label="menu">
-                            <MenuIcon />
-                        </IconButton>
+                        <>
+                            {/* Hamburger Menu Icon */}
+                            <IconButton edge="end" onClick={() => setDrawerOpen(true)} aria-label="menu">
+                                <MenuIcon />
+                            </IconButton>
+
+                            {/* Drawer for Mobile Navigation */}
+                            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+                                <Box sx={{ width: 250 }} role="presentation">
+                                    <List>
+                                        {buttons.includes("Home") && (
+                                            <ListItem button sx={{ color: '#486284', fontWeight: 900 }} onClick={navigateHome}>
+                                                <ListItemText primary="Home" />
+                                            </ListItem>
+                                        )}
+                                        {buttons.includes("Contact") && (
+                                            <ListItem button  sx={{ color: '#486284', fontWeight: 900 }} onClick={navigateContact}>
+                                                <ListItemText primary="Contact" />
+                                            </ListItem>
+                                        )}
+                                        {buttons.includes("Profile") && (
+                                            <ListItem button sx={{ color: '#486284', fontWeight: 900 }} onClick={navigateProfile}>
+                                                <ListItemText primary="Profile" />
+                                            </ListItem>
+                                        )}
+                                        {buttons.includes("Sign Out") && (
+                                            <ListItem button 
+                                            sx={{
+                                                    color: "#FFFF",
+                                                    backgroundColor: "#486284",
+                                                  
+                                                }}
+                                            
+                                            
+                                            onClick={navigateSignOut}>
+                                                <ListItemText primary="Sign Out" />
+                                            </ListItem>
+                                        )}
+                                    </List>
+                                </Box>
+                            </Drawer>
+                        </>
                     ) : (
                         <Box sx={{ display: 'flex', gap: 2, ml: 'auto' }}>
                             {/* Render buttons conditionally based on the buttons prop */}

@@ -8,10 +8,9 @@ import theme from "../Theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { UserContext } from '../contexts/UserContext'; // import UserContext
+
 
 function SignIn() {
-    const { setUser } = useContext(UserContext); // Access setUser from context
     const navigate = useNavigate();
 
     const handleGoBack = () => {
