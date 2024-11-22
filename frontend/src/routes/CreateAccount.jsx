@@ -1,7 +1,7 @@
 import Logo from "../components/Logo";
-import { AppBar, Stack } from "@mui/material";
+import { AppBar, LinearProgress, Stack } from "@mui/material";
 import Fade from '@mui/material/Fade';
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TextField from '@mui/material/TextField';
 import Button from "@mui/material/Button";
 import axios from 'axios'
@@ -11,6 +11,7 @@ import Snackbar from '@mui/material/Snackbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation } from 'react-router-dom'
 import SpotifyPreview from "../components/SpotifyPreview";
+import { AuthContext } from '../contexts/AuthProvider'
 
 
 function CreateAccount() {
@@ -19,8 +20,9 @@ function CreateAccount() {
         navigate("/login")
     }
     const location = useLocation();
+
+    const { checkUserAuth } = useContext(AuthContext)
     
-    // ONCE Davi gives me access to API so I can add myself, uncomment this!!!
     const searchParams = Object.fromEntries(new URLSearchParams(location.search));
     const [formData, setFormData] = useState({
         username: searchParams['display_name'],
@@ -48,7 +50,10 @@ function CreateAccount() {
     const handleFormSubmit = () => {
         setFormErrors({})
         axios.post('api/user/register/', formData)
-        .then(res => {navigate('/profile')})
+        .then(res => {
+            console.log(res)
+            //navigate('/profile')
+        })
         .catch(ex => {
             const res = ex.response
             if(res && res.status === 400)
@@ -61,119 +66,118 @@ function CreateAccount() {
     }
     return (
         <ThemeProvider theme = {theme}>
+            <>
+                <Snackbar 
+                    open={serverError.length !== 0}
+                    autoHideDuration={5000}
+                    onClose={dismissServerErrors}
+                    anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                    message={serverError}
+                />
 
-        <Snackbar 
-            open={serverError.length !== 0}
-            autoHideDuration={5000}
-            onClose={dismissServerErrors}
-            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-            message={serverError}
-        />
-
-        <Button 
-            startIcon = {<ArrowBackIcon />} 
-            onClick={handleGoBack}
-            sx = {{
-                position: "absolute",
-                top: 16,
-                left: 16,
-                color: "#486284",
-                fontWeight: 900
-            }}
-        >
-            Back
-        </Button>
-        
-    
-        <Stack 
-        direction= 'column'
-        
-        sx = {{
-                display: 'flex',
-                justifyContent: 'center', 
-                alignItems: 'center',
-                height: '100vh',
-                gap: 3,
-                mx: 'auto',
-               
+                <Button 
+                    startIcon = {<ArrowBackIcon />} 
+                    onClick={handleGoBack}
+                    sx = {{
+                        position: "absolute",
+                        top: 16,
+                        left: 16,
+                        color: "#486284",
+                        fontWeight: 900
+                    }}
+                >
+                    Back
+                </Button>
                 
-        }}
-        >
-        <Logo fontSize="100px"  />
-        <SpotifyPreview {...searchParams} />
-        {/* Username Field */}
-        <TextField 
-            id="username"
-            label="Username" 
-            variant="outlined" 
-            autoComplete="username" 
-            sx ={{
-                width: '500px',
+            
+                <Stack 
+                direction= 'column'
+                
+                sx = {{
+                        display: 'flex',
+                        justifyContent: 'center', 
+                        alignItems: 'center',
+                        height: '100vh',
+                        gap: 3,
+                        mx: 'auto',
+                    
+                        
                 }}
-            value={formData.username}
-            onChange={e => handleFormChange('username', e.target.value)}
-            error={'username' in formErrors}
-            helperText={'username' in formErrors ? formErrors.username : null}
-        />
+                >
+                    <Logo fontSize="100px"  />
+                    <SpotifyPreview {...searchParams} />
+                    {/* Username Field */}
+                    <TextField 
+                        id="username"
+                        label="Username" 
+                        variant="outlined" 
+                        autoComplete="username" 
+                        sx ={{
+                            width: '500px',
+                            }}
+                        value={formData.username}
+                        onChange={e => handleFormChange('username', e.target.value)}
+                        error={'username' in formErrors}
+                        helperText={'username' in formErrors ? formErrors.username : null}
+                    />
 
-        {/* email id */}
-        <TextField 
-            id="email" 
-            label="Email" 
-            variant="outlined" 
-            autoComplete="email" 
-            sx ={{
-                width: '500px',
-            }} 
-            value={formData.email}
-            onChange={e => handleFormChange('email', e.target.value)}
-            error={'email' in formErrors}
-            helperText={'email' in formErrors ? formErrors.email : null}
-        />
+                    {/* email id */}
+                    <TextField 
+                        id="email" 
+                        label="Email" 
+                        variant="outlined" 
+                        autoComplete="email" 
+                        sx ={{
+                            width: '500px',
+                        }} 
+                        value={formData.email}
+                        onChange={e => handleFormChange('email', e.target.value)}
+                        error={'email' in formErrors}
+                        helperText={'email' in formErrors ? formErrors.email : null}
+                    />
 
-        {/* Password field  :D*/}
-        <TextField 
-            id = 'password' 
-            label= "Password"  
-            variant="outlined" 
-            autoComplete="password" 
-            sx={{
-                width: '500px',
-            }} 
-            value={formData.password}
-            onChange={e => handleFormChange('password', e.target.value)}
-            error={'password' in formErrors}
-            helperText={'password' in formErrors ? formErrors.password : null}
-        />
+                    {/* Password field  :D*/}
+                    <TextField 
+                        id = 'password' 
+                        label= "Password"  
+                        variant="outlined" 
+                        autoComplete="password" 
+                        sx={{
+                            width: '500px',
+                        }} 
+                        value={formData.password}
+                        onChange={e => handleFormChange('password', e.target.value)}
+                        error={'password' in formErrors}
+                        helperText={'password' in formErrors ? formErrors.password : null}
+                    />
 
-        {/* Re-enter Password field */}
-        <TextField 
-            id = 'confirm-password' 
-            label= "Confirm Password"  
-            variant="outlined" 
-            autoComplete="confirmed-password" 
-            sx={{
-                color: "#65558F",
-                width: '500px', 
-            }} 
-            value={formData.password2}
-            onChange={e => handleFormChange('password2', e.target.value)}
-            error={'password2' in formErrors}
-            helperText={'password2' in formErrors ? formErrors.password2 : null}
-        />
+                    {/* Re-enter Password field */}
+                    <TextField 
+                        id = 'confirm-password' 
+                        label= "Confirm Password"  
+                        variant="outlined" 
+                        autoComplete="confirmed-password" 
+                        sx={{
+                            color: "#65558F",
+                            width: '500px', 
+                        }} 
+                        value={formData.password2}
+                        onChange={e => handleFormChange('password2', e.target.value)}
+                        error={'password2' in formErrors}
+                        helperText={'password2' in formErrors ? formErrors.password2 : null}
+                    />
 
-        {/* Register */}
-        <Button  sx =
-         {{ color: "#FFFF",
-            backgroundColor: "#486284",
-            width: '500px',
-            fontFamily: '"League Spartan", sans-serif',
-            fontWeight: 900
-          }}
-         variant='text' onClick={handleFormSubmit}> Register </Button>
-        </Stack>
-
-
+                    {/* Register */}
+                    <Button  sx =
+                    {{ color: "#FFFF",
+                        backgroundColor: "#486284",
+                        width: '500px',
+                        fontFamily: '"League Spartan", sans-serif',
+                        fontWeight: 900
+                    }}
+                    variant='text' onClick={handleFormSubmit}> Register </Button>
+                </Stack>
+            </>
         </ThemeProvider>
 
     )

@@ -10,10 +10,8 @@ import SignIn from './routes/SignIn'
 import ContactPage from './routes/ContactPage';
 import DuoWrapped from './routes/duoWrapped'
 import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
-import TopGenres from './routes/TopGenres'
-import TopSongs from './routes/TopSongs'
-import TopArtists from './routes/TopArtists'
-
+import { AuthProvider, RequireAuth, RequireNoAuth } from './contexts/AuthProvider'
+import { UserProvider } from './contexts/UserProvider'
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -21,26 +19,47 @@ import TopArtists from './routes/TopArtists'
 
 function App() {
 
+  // These routes require the user to not be logged in (redirects to their profile if logged in)
+  const noAuthRoutes = [
+    {path: '/login', Element: Login},
+    {path: '/signin', Element: SignIn},
+    {path: '/account', Element: CreateAccount},
+  ]
+
+  // These routes require user login (redirects to login page if not logged in)
+  const authRoutes = [
+    {path: '/contact', Element: ContactPage},
+    {path: '/profile', Element: ProfilePage},
+    {path: '/duo', Element: DuoWrapped},
+    {path: '/duofriend', Element: DuoWrappedMainPage},
+    {path: '/main', Element: MainPage}
+  ]
+
   return (
     <ThemeProvider theme={theme}>
       {/* Use Css Baseline for importing your global variables styling themes into the app */}
-      <CssBaseline />        
-      <Routes>
-        <Route path='/login' element={<Login />}/>
-        <Route path='/main' element={<MainPage/>}/>
-        <Route path='/account' element = {<CreateAccount/>}/>
-        <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/signin' element={<SignIn />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/duo" element={<DuoWrapped/>} />
-        <Route path="/duofriend" element={<DuoWrappedMainPage/>} />
-        <Route path="/topgenres" element={<TopGenres/>} />
-        <Route path="/topsongs" element={<TopSongs/>} />
-        <Route path="/topartists" element={<TopArtists/>} />
-
-
-        
-      </Routes>
+      <CssBaseline /> 
+      <AuthProvider>
+        <Routes>
+          {noAuthRoutes.map(({path, Element}) => (
+            <Route path={path} key={path} element={
+              <RequireNoAuth>
+                <Element />
+              </RequireNoAuth>
+            } />
+          ))}
+          {authRoutes.map(({path, Element}) => (
+            <Route path={path} key={path} element={
+              <RequireAuth>
+                <UserProvider>
+                  <Element />
+                </UserProvider>
+              </RequireAuth>
+            } />
+          ))}
+        </Routes>
+      </AuthProvider>       
+      
     </ThemeProvider>
   )
 

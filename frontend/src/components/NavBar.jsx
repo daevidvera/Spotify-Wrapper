@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery, CircularProgress } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logo from "./Logo";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../Theme";
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import { useNavigate } from 'react-router-dom'
 import axios from "axios";
-import getCookie from "../../csrf/csrf";
-import defaultPfp from '../assets/default_pfp.jpeg'
-
+import { getCookie } from "../csrf/csrf";
+import { UserContext } from '../contexts/UserProvider'
 
 function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // buttons prop with default value
+    const { user, userDataLoading } = useContext(UserContext)
+    // const { user } = useContext(UserContext)
+    // const userDataLoading = true
+    const profileImg = user['profile_img']
+    
     const isMobile = useMediaQuery('(max-width:600px)');
     const navigate = useNavigate();
 
@@ -41,20 +44,6 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
         navigate('/contact');
     }
 
-    const [profileImg, setProfileImg] = useState(defaultPfp)
-    useEffect(() => {
-        axios.get('/api/user/profile/', {
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            withCredentials: true
-        })
-        .then(res => {
-            if('profile_img' in res.data)
-                setProfileImg(res.data['profile_img'])
-        })
-    })    
-
     return (
         <ThemeProvider theme={theme}>
             <AppBar position="static" 
@@ -65,8 +54,6 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                 padding: "8px 98px",
                 boxShadow: "none",
                 borderBottom: "1px solid #DEE5ED"
-                
-
             
             }}>
                 <Toolbar>
@@ -86,11 +73,15 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                                 <Button onClick={navigateContact} sx={{ color: '#486284', fontWeight: 900 }}>Contact</Button>
                             )}
                             {buttons.includes("Profile") && (
-                                <Button onClick={navigateProfile} sx={{ color: "#486284", width: '10px', borderRadius: '50%' }}>
-                                    <img src={profileImg} style={{height: 'auto', maxWidth: '100%', borderRadius: '50%' }}/>
-                                </Button>
+                                userDataLoading ? (
+                                    <CircularProgress />
+                                ) : (
+                                    <Button onClick={navigateProfile} sx={{ color: "#486284", width: '10px', borderRadius: '50%' }}>
+                                        <img src={profileImg} style={{height: 'auto', maxWidth: '100%', borderRadius: '50%' }}/>
+                                    </Button>
+                                )
                             )}
-                            {buttons.includes("Sign Out") && (
+                            {buttons.includes("Sign Out") && !userDataLoading && (
                                 <Button onClick={navigateSignOut}
                                     sx={{
                                         color: "#FFFF",

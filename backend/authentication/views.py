@@ -131,7 +131,7 @@ def auth_callback(request):
                 'spotify_profile_url': spotify_profile_url,
                 'profile_img': profile_img
             }
-            return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/signin?{urlencode(params)}")
+            return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/profile")
     # Else, direct users to the registration page (INCLUDE PRIVACY POLICY!)
     except User.DoesNotExist:
         pass

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Button, Box, Typography } from "@mui/material";
 import Dialog from '@mui/material/Dialog';
@@ -9,8 +9,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import NavBar from '../components/NavBar';
 import SpotifyPreview from '../components/SpotifyPreview'
-import getCookie from '../../csrf/csrf';
+import { getCookie } from '../csrf/csrf';
 import axios from 'axios';
+import { UserContext } from '../contexts/UserProvider';
 
 
 const ProfilePage = () => {
@@ -19,20 +20,7 @@ const ProfilePage = () => {
   const [deletePromptVisible, setDeletePromptVisible] = useState(false)
   const toggleDeletePrompt = () => setDeletePromptVisible(dpv => !dpv)
 
-  const [profileData, setProfileData] = useState(null)
-  useEffect(() => {
-    axios.get('/api/user/profile/', {
-      headers: {
-        'X-CSRFToken': getCookie('csrftoken')
-      },
-      withCredentials: true
-    })
-    .then(res => setProfileData(res.data))
-    .catch(ex => {
-      console.error(ex.response?.data || ex.message)
-      window.alert('An error has occurred in retrieving user data. Check console for more details.')
-    })
-  }, [])
+  const { user, userDataLoading } = useContext(UserContext)
 
   const handleDeleteAccount = () => {
     axios.delete('/api/user/delete/', {
@@ -82,7 +70,11 @@ const ProfilePage = () => {
           }}
         >
           {
-            profileData ? (
+            userDataLoading ? (
+              <Stack sx={{width: '100%', alignItems: 'center'}}>
+                <CircularProgress />
+              </Stack>
+            ) : (
               <>
                 <Stack
             spacing={2}
@@ -94,7 +86,7 @@ const ProfilePage = () => {
           >
                 {/* avatar  */}
                 <Box>
-                  <SpotifyPreview {...profileData} />
+                  <SpotifyPreview {...user} />
                 </Box>
                 {/*  user  */}
                 <Box sx={{
@@ -105,14 +97,14 @@ const ProfilePage = () => {
                     fontWeight: 900,
                     fontSize: { xs: '1.2rem', sm: '1.7rem', md: '1.9rem' },
                   }}> 
-                    @{profileData.username}
+                    @{user['username']}
                   </Typography>
                   <Typography sx={{
                     fontFamily: '"League Spartan", sans-serif'
                   }}
                     variant='button'
                   >
-                    {profileData.email}
+                    {user['email']}
                   </Typography>
                 </Box>
                 <Button 
@@ -164,10 +156,6 @@ const ProfilePage = () => {
                 </Typography>
               </Box>
               </>
-            ) : (
-              <Stack sx={{alignItems: 'center', width: '100%'}}>
-                <CircularProgress />
-              </Stack>
             )
           }
         </Box>

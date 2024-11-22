@@ -3,7 +3,6 @@ import theme from "../Theme";
 import defaultPfp from '../assets/default_pfp.jpeg'
 
 function SpotifyPreview({display_name, spotify_profile_url, profile_img = defaultPfp}) {
-    console.log(display_name, spotify_profile_url, profile_img)
     const handleSpotifyRedirect = () => window.open(spotify_profile_url, '_blank')
 
     return display_name && spotify_profile_url && (

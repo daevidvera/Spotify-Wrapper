@@ -56,7 +56,9 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return Response({'message': 'Login successful', 'username': user.username}, status=status.HTTP_200_OK)
+            # Serialize user profile data to load user context
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
         else:
             return Response({'error': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -85,3 +87,15 @@ class ProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    
+
+# Checks if user is authenticated
+class AuthCheckView(APIView):
+    permission_classes=[AllowAny]
+    def get(self, request):
+        try:
+            if request.user.is_authenticated:
+                return Response({'authenticated': True})
+        except:
+            pass
+        return Response({'authenticated': False})
