@@ -17,4 +17,4 @@ class Wrap(models.Model):
 
     def __str__(self):
         creators = [str(usr) for usr in self.created_by.all()]
-        return f'{self.id} : {' & '.join(creators)} : {self.created_at} : {self.time_range}'
+        return f'{self.id} : {" & ".join(creators)} : {self.created_at} : {self.time_range}'

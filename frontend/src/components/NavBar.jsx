@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery } from "@mui/material";
+import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery, CircularProgress } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logo from "./Logo";
 import { ThemeProvider } from "@emotion/react";
@@ -8,6 +8,9 @@ import { useNavigate } from 'react-router-dom'
 import axios from "axios";
 import { getCookie } from "../csrf/csrf";
 import { UserContext } from '../contexts/UserProvider'
+import { useContext } from "react";
+import { useState } from "react";
+import { Drawer, List, ListItem, ListItemText } from "@mui/material";
 
 function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // buttons prop with default value
     const { user, userDataLoading } = useContext(UserContext)
@@ -75,10 +78,45 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                                             </ListItem>
                                         )}
                                         {buttons.includes("Profile") && (
-                                            <ListItem button sx={{ color: '#486284', fontWeight: 900 }} onClick={navigateProfile}>
-                                                <ListItemText primary="Profile" />
-                                            </ListItem>
-                                        )}
+                                        <ListItem
+                                            button
+                                            onClick={userDataLoading ? null : navigateProfile} // Disable interaction when loading
+                                            sx={{
+                                                color: "#486284",
+                                                fontWeight: 900,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1,
+                                            }}
+                                        >
+                                            {userDataLoading ? (
+                                                <CircularProgress size={24} sx={{ color: "#486284" }} />
+                                            ) : (
+                                                <Button
+                                                    sx={{
+                                                        color: "#486284",
+                                                        width: "40px",
+                                                        height: "40px",
+                                                        minWidth: 0,
+                                                        borderRadius: "50%",
+                                                        padding: 0,
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={profileImg}
+                                                        alt="Profile"
+                                                        style={{
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            objectFit: "cover",
+                                                            borderRadius: "50%",
+                                                        }}
+                                                    />
+                                                </Button>
+                                            )}
+                                            <ListItemText primary="Profile" />
+                                        </ListItem>
+                                    )}
                                         {buttons.includes("Sign Out") && (
                                             <ListItem button 
                                             sx={{

@@ -8,7 +8,8 @@ import Button from "@mui/material/Button";
 import Logo from "../components/Logo";
 import { ThemeProvider } from "@mui/material/styles";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { UserContext } from '../contexts/UserContext'; // import UserContext
+import theme from '../Theme'
+import { getCookie } from "../csrf/csrf";
 
 function SignIn() {
     const navigate = useNavigate();
