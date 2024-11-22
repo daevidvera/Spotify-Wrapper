@@ -1,62 +1,36 @@
 import '../styles/Login.css';
-import { Stack } from '@mui/material';
+import { LinearProgress, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import Logo from '../components/Logo';
 import { useNavigate } from 'react-router-dom';
 import Fade from '@mui/material/Fade';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../contexts/AuthProvider';
+import axios from 'axios';
 
 // Login page
 
 // Computer compatible: ✅
 // Mobile compatible: ✅
 
-export const UserContext = createContext();
-
-export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState({
-        name: null,
-        userID: null,
-        displayName: null,
-        username: null,
-    });
-
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            {children}
-        </UserContext.Provider>
-    );
-};
-
-UserProvider.propTypes = {
-    children: PropTypes.node.isRequired,
-};
 
 function Login() {
-    const { setUser } = useContext(UserContext); // Access setUser from context
     const [showLogo, setShowLogo] = useState(false);
+
+    useEffect(() => {setShowLogo(true)}, [])
+
     const navigate = useNavigate();
 
-    useEffect(() => {
-        setShowLogo(true);
-    }, []);
+    const handleSignIn = () => navigate('/signin')
 
-    const handleSignIn = () => {
-        // Example user data
-        const userData = {
-            name: 'John Doe',
-            userID: 'spotify123',
-            displayname: 'JohnD',
-            username: 'john_doe_account',
-        };
-        setUser(userData); // Set user data in context
-        navigate('/signin');
-    };
-
-    const handleCreateAccount = () => {
-        navigate('/account');
-    };
+    const handleCreateAccount = () => axios.get('/api/auth/url', {withCredentials: true})
+    .then(res => res.data)
+    .then(data => data.auth_url)
+    .then(authUrl => { window.location = authUrl })
+    .catch(ex => {
+        console.error(ex)
+        window.alert('An error has occurred when reaching Spotify. See console for more details')
+    })
 
     return (
         <Stack

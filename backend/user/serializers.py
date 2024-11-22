@@ -15,13 +15,16 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username',
+            'display_name',
             'email',
             'password',
             'password2',
             'access_token',
             'refresh_token',
             'last_refresh',
-            'spotify_id'
+            'spotify_id',
+            'spotify_profile_url',
+            'profile_img'
         ]
 
         # Required for registration
@@ -42,18 +45,20 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         user = User(
             username=validated_data['username'],
+            display_name=validated_data['display_name'],
             email=validated_data['email'],
             access_token=validated_data['access_token'],
             refresh_token=validated_data['refresh_token'],
             last_refresh=validated_data['last_refresh'],
-            spotify_id=validated_data['spotify_id']
+            spotify_id=validated_data['spotify_id'],
+            spotify_profile_url=validated_data['spotify_profile_url'],
+            profile_img=validated_data['profile_img']
         )
         user.set_password(validated_data['password'])
         user.save()
         return user
 
-# Handles data validation for post requests
-# Also filters sensitive data from get requests
+# Filters sensitive data from GET requests
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -62,18 +67,20 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'email',
             'spotify_id', 
-            'display_name', 
             'access_token', 
             'refresh_token', 
             'last_refresh', 
-            'profile_img', 
-            'spotify_profile_url'
+            'display_name',
+            'spotify_profile_url',
+            'profile_img'
         ]
         extra_kwargs = {
             # Required fields
             'email': {'required': True},
             'spotify_id': {'required': True},
             'display_name': {'required': True},
+            'spotify_profile_url': {'required': True},
+
 
             # Don't return these in GET requests
             'access_token': {'write_only': True, 'required': True},
@@ -83,25 +90,14 @@ class UserSerializer(serializers.ModelSerializer):
 
             # Extra fields
             'profile_img': {'required': False},
-            'spotify_profile_url': {'required': False},
         }
     
-    
-    def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        user = User.objects.create_user(**validated_data)
-
-        if password:
-            user.set_password(password)
-            user.save()
-        return user
-    
-    def update(self, instance, validated_data):
-        # Handle updating user information, including re-hashing the password if provided
-        for attr, value in validated_data.items():
-            if attr == 'password':
-                instance.set_password(value)
-            else:
-                setattr(instance, attr, value)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     # Handle updating user information, including re-hashing the password if provided
+    #     for attr, value in validated_data.items():
+    #         if attr == 'password':
+    #             instance.set_password(value)
+    #         else:
+    #             setattr(instance, attr, value)
+    #     instance.save()
+    #     return instance

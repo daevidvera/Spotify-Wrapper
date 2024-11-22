@@ -1,13 +1,20 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery, Drawer, List, ListItem, ListItemText } from "@mui/material";
+import React from "react";
+import { AppBar, Toolbar, Button, IconButton, Box, useMediaQuery } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logo from "./Logo";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../Theme";
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import { useNavigate } from 'react-router-dom'
+import axios from "axios";
+import { getCookie } from "../csrf/csrf";
+import { UserContext } from '../contexts/UserProvider'
 
 function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // buttons prop with default value
+    const { user, userDataLoading } = useContext(UserContext)
+    // const { user } = useContext(UserContext)
+    // const userDataLoading = true
+    const profileImg = user['profile_img']
+    
     const isMobile = useMediaQuery('(max-width:600px)');
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,7 +31,6 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
 
     const navigateSignOut = () => {
         navigate('/login');
-        setDrawerOpen(false);
     }
 
     const navigateContact = () => {
@@ -42,8 +48,6 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                 padding: "8px 98px",
                 boxShadow: "none",
                 borderBottom: "1px solid #DEE5ED"
-                
-
             
             }}>
                 <Toolbar>
@@ -102,11 +106,15 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) { // b
                                 <Button onClick={navigateContact} sx={{ color: '#486284', fontWeight: 900 }}>Contact</Button>
                             )}
                             {buttons.includes("Profile") && (
-                                <IconButton onClick={navigateProfile} sx={{ color: "#486284" }}>
-                                    <AccountCircleTwoToneIcon />
-                                </IconButton>
+                                userDataLoading ? (
+                                    <CircularProgress />
+                                ) : (
+                                    <Button onClick={navigateProfile} sx={{ color: "#486284", width: '10px', borderRadius: '50%' }}>
+                                        <img src={profileImg} style={{height: 'auto', maxWidth: '100%', borderRadius: '50%' }}/>
+                                    </Button>
+                                )
                             )}
-                            {buttons.includes("Sign Out") && (
+                            {buttons.includes("Sign Out") && !userDataLoading && (
                                 <Button onClick={navigateSignOut}
                                     sx={{
                                         color: "#FFFF",

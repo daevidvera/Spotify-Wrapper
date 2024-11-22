@@ -1,5 +1,6 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 import secrets
 from django.conf import settings
 from backend.utils import print_error
@@ -16,6 +17,7 @@ from user.models import User
 
 # Generates Spotify auth link
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def auth_url(request):
 
     # Generate random string for OAuth security (see RFC-6749)
@@ -49,6 +51,7 @@ def auth_url(request):
 
 # Handles Spotify authorization callback
 @api_view(['GET'])
+@permission_classes([AllowAny]) 
 def auth_callback(request):
     error = request.query_params.get('error')
     code = request.query_params.get('code')
@@ -128,7 +131,7 @@ def auth_callback(request):
                 'spotify_profile_url': spotify_profile_url,
                 'profile_img': profile_img
             }
-            return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/signin?{urlencode(params)}")
+            return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/profile")
     # Else, direct users to the registration page (INCLUDE PRIVACY POLICY!)
     except User.DoesNotExist:
         pass
@@ -138,16 +141,16 @@ def auth_callback(request):
         'access_token': access_token,
         'refresh_token': refresh_token,
         'last_refresh': last_refresh.isoformat(),
-        'spotify_id': spotify_id
+        'spotify_id': spotify_id,
+        'display_name': display_name,
+        'spotify_profile_url': spotify_profile_url,
+        'profile_img': profile_img
     })
+    params = dict()
     # Create URL params and redirect to account creation
-    params = {}
-    if display_name:
-        params['display_name'] = display_name
-    if spotify_profile_url:
-        params['spotify_profile_url'] = spotify_profile_url
-    if email:
-        params['email'] = email
+    params['display_name'] = display_name
+    params['spotify_profile_url'] = spotify_profile_url
+    params['email'] = email
     if profile_img:
         params['profile_img'] = profile_img
 
