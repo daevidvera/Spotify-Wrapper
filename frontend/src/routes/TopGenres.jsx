@@ -22,7 +22,9 @@ const TopGenres = () => {
         height: '100vh',
         margin: '0',
     };
+    
 
+    //header
     const headerStyle = {
         fontSize: '6em',
         marginBottom: '20px'
