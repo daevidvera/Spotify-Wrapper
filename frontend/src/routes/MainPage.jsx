@@ -9,7 +9,6 @@ function MainPage() {
     const navigate = useNavigate();
     const navigatemyWrap = () => {
         navigate('/topgenres');
-
     }
     return (
         <Box>

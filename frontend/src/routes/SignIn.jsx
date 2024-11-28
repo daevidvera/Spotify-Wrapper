@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { AppBar, LinearProgress, Stack } from "@mui/material";
+import {AppBar, IconButton, InputAdornment, LinearProgress, Stack} from "@mui/material";
 import TextField from '@mui/material/TextField';
 import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
@@ -10,6 +10,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import theme from '../Theme'
 import { getCookie } from "../csrf/csrf";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 function SignIn() {
     const navigate = useNavigate();
@@ -37,7 +38,8 @@ function SignIn() {
     const handleSignIn = () => {
         setFormErrors('')
         axios.post('api/user/login/', {username, password}, {
-            headers: {'X-CSRFToken': getCookie('csrftoken')}
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
+            withCredentials: true
         })
         .then(res => navigate('/profile'))
         .catch(ex => {
@@ -51,6 +53,9 @@ function SignIn() {
             }
         })
     };
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleTogglePasswordVisibility = () => {setShowPassword(!showPassword)};
 
     return (
         <ThemeProvider theme = {theme}>
@@ -100,13 +105,23 @@ function SignIn() {
             error={formErrors.length !== 0}
             />
             {/* Password field  :D*/}
-            <TextField id = 'password' label= "Password"  variant="outlined" autoComplete="password" sx={{
+            <TextField id = 'password' label= "Password" type={showPassword ? "text" : "password"} variant="outlined" autoComplete="password" sx={{
                 width: '500px',
             }}
             value={password}
             onChange={handlePasswordChange}
             error={formErrors.length !== 0}
             helperText={formErrors}
+
+           InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePasswordVisibility} edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                    </InputAdornment>
+                ),
+            }}
             />
 
             {/* Spotify Auth  C */}

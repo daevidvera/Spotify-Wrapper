@@ -30,7 +30,7 @@ def auth_url(request):
         'spotify_auth_state',
         oauth_state,
         httponly=True,
-        secure=settings.USING_HTTPS,
+        secure=True,
         samesite='None', # Has to go to different website (accounts.spotify.com)
         max_age=300 # 5 minutes
     )
@@ -72,7 +72,7 @@ def auth_callback(request):
     if not (oauth_state and oauth_state == state):
         print_error(f'Error occurred in auth callback: OAuth states do not match!')
         return Response({'error': 'OAuth state invalid'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Get access tokens using auth code (see https://developer.spotify.com/documentation/web-api/tutorials/code-flow)
     payload = {
         'grant_type': 'authorization_code',

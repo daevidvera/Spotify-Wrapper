@@ -1,17 +1,17 @@
 import '../styles/Login.css';
-import { LinearProgress, Stack } from '@mui/material';
+import {Stack} from '@mui/material';
 import Button from '@mui/material/Button';
 import Logo from '../components/Logo';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import Fade from '@mui/material/Fade';
-import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../contexts/AuthProvider';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
 // Login page
 
 // Computer compatible: ✅
 // Mobile compatible: ✅
+
 
 
 function Login() {
@@ -23,14 +23,19 @@ function Login() {
 
     const handleSignIn = () => navigate('/signin')
 
-    const handleCreateAccount = () => axios.get('/api/auth/url', {withCredentials: true})
-    .then(res => res.data)
-    .then(data => data.auth_url)
-    .then(authUrl => { window.location = authUrl })
-    .catch(ex => {
-        console.error(ex)
-        window.alert('An error has occurred when reaching Spotify. See console for more details')
-    })
+    const handleCreateAccount = async () => {
+        try {
+            const res = await axios.get('/api/auth/url', {withCredentials: true});
+            if (res.data && res.data.auth_url) {
+                window.location = res.data.auth_url;
+            } else {
+                throw new Error('No auth URL returned');
+            }
+        } catch (ex) {
+            console.error(ex);
+            window.alert('An error has occurred when reaching Spotify. See console for more details');
+        }
+    }
 
     return (
         <Stack
