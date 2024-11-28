@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 import base64
 import requests
 from user.models import User
+from datetime import timedelta
 
 # Contains API that handles Spotify authorization
 
@@ -51,7 +52,7 @@ def auth_url(request):
 
 # Handles Spotify authorization callback
 @api_view(['GET'])
-@permission_classes([AllowAny]) 
+@permission_classes([AllowAny])
 def auth_callback(request):
     error = request.query_params.get('error')
     code = request.query_params.get('code')
@@ -60,12 +61,12 @@ def auth_callback(request):
     if not state or (not error and not code):
         print_error(f'Error occurred in auth callback: Missing request fields!')
         return Response({'error': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # If error exists, handle it
     if error:
         print_error(f'Error occurred in auth callback: {error}')
         return Response({'error': 'Error in auth callback'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Check if state matches state in cookies
     oauth_state = request.COOKIES.get('spotify_auth_state')
 
@@ -91,7 +92,7 @@ def auth_callback(request):
     if response.status_code != status.HTTP_200_OK:
         print_error(f'Error occurred in auth callback: token exchange failed:\n{response.text}')
         return Response({'error': 'Token exchange failed'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     response = response.json()
     access_token = response.get('access_token')             # Store in session data for use in account creation
     refresh_token = response.get('refresh_token')           # Store in session data for use in account creation
@@ -108,20 +109,20 @@ def auth_callback(request):
     if response.status_code != status.HTTP_200_OK:
         print_error(f'Error occurred in auth callback: failed to get user profile:\n{response.text}')
         return Response({'error': 'Failed to retrieve user'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     response = response.json()
     spotify_id = response.get('id')                         # Store in session data for use in account creation
     display_name = response.get('display_name')             # Store in URL Params (safe info)
     external_urls = response.get('external_urls')
     spotify_profile_url = external_urls['spotify']          # Store in URL Params (safe info)
-    images = response.get('images')                 
+    images = response.get('images')
     profile_img = images[0] if len(images) > 0 else None    # Store in URL Params (safe info)
     profile_img = profile_img['url'] if profile_img else None
     email = response.get('email')                           # Store in URL Params (safe info)
 
 
     # If user exists, redirect to login page with user details
-    try: 
+    try:
         user = User.objects.get(spotify_id=spotify_id)
         if user:
             username = user.username                        # Store in URL Params (safe info)
@@ -136,7 +137,7 @@ def auth_callback(request):
     except User.DoesNotExist:
         pass
 
-    # Store session data 
+    # Store session data
     request.session.update({
         'access_token': access_token,
         'refresh_token': refresh_token,
@@ -155,3 +156,33 @@ def auth_callback(request):
         params['profile_img'] = profile_img
 
     return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/account?{urlencode(params)}")
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def top_artists(request):
+    print(request)
+    user_id = request.query_params.get('user_id')
+
+    if not user_id:
+        return Response({'error': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    access_token = request.session.get('access_token')
+    if not access_token:
+        return Response({'error': 'Access token not found'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get('https://api.spotify.com/v1/me/top/artists?limit=5', headers=headers)
+
+    if response.status_code != status.HTTP_200_OK:
+        print_error(f'Error fetching top artists: {response.text}')
+        return Response({'error': 'Failed to retrieve top artists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(response.json(), status=status.HTTP_200_OK)

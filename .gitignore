@@ -9,7 +9,8 @@ local_settings.py
 db.sqlite3
 
 # Virtual environments
-.env
+backend/backend/.env
+frontend/.env
 .venv/
 venv/
 

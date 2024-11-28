@@ -12,6 +12,7 @@ import DuoWrapped from './routes/duoWrapped'
 import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
 import { AuthProvider, RequireAuth, RequireNoAuth } from './contexts/AuthProvider'
 import { UserProvider } from './contexts/UserProvider'
+import TopArtists from "./routes/TopArtists";
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -32,7 +33,8 @@ function App() {
     {path: '/profile', Element: ProfilePage},
     {path: '/duo', Element: DuoWrapped},
     {path: '/duofriend', Element: DuoWrappedMainPage},
-    {path: '/main', Element: MainPage}
+    {path: '/main', Element: MainPage},
+    {path: '/topartists', Element: TopArtists},
   ]
 
   return (
