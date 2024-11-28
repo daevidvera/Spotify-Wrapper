@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 function MainPage() {
     const navigate = useNavigate();
     const navigatemyWrap = () => {
-        navigate('/topgenres');
+        navigate('/wrapper');
     }
     return (
         <Box>

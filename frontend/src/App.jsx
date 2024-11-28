@@ -13,6 +13,9 @@ import DuoWrappedMainPage from './routes/DuoWrappedMainPage'
 import { AuthProvider, RequireAuth, RequireNoAuth } from './contexts/AuthProvider'
 import { UserProvider } from './contexts/UserProvider'
 import TopArtists from "./routes/TopArtists";
+import TopGenres from "./routes/TopGenres"
+import TopSongs from './routes/TopSongs'
+import Wrapper from './routes/Wrapper'
 
 // Initializes core app wrappers
 // ThemeProvider: enables custom theme defined in ./Theme.jsx
@@ -35,6 +38,9 @@ function App() {
     {path: '/duofriend', Element: DuoWrappedMainPage},
     {path: '/main', Element: MainPage},
     {path: '/topartists', Element: TopArtists},
+    {path: '/topgenres', Element: TopGenres},
+    {path: '/topsongs', Element: TopSongs},
+    {path: '/wrapper', Element: Wrapper}
   ]
 
   return (

@@ -1,43 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../contexts/UserProvider.jsx';
 import axios from 'axios';
+import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 
 const TopArtists = () => {
     const { user } = useContext(UserContext);
     const [topArtists, setTopArtists] = useState([]);
     const [hoveredArtist, setHoveredArtist] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    const containerStyle = {
-        textAlign: 'center',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#1DB954',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        margin: '0',
-    };
-
-    const headerStyle = {
-        fontSize: '6em',
-        marginBottom: '20px',
-    };
-
-    const listStyle = {
-        listStyleType: 'none',
-        fontSize: '3em',
-        padding: '0',
-    };
-
-    const getArtistStyle = (id) => ({
-        margin: '10px 0',
-        fontSize: hoveredArtist === id ? '1.6em' : '1.2em',
-        transition: 'font-size 0.3s ease',
-        cursor: 'pointer',
-    });
 
     // Fetch top artists from the backend
     useEffect(() => {
@@ -55,7 +25,6 @@ const TopArtists = () => {
                 setTopArtists(response.data || []);
             } catch (error) {
                 console.error('Error fetching top artists:', error);
-                alert('Failed to load top artists. Check console for details.');
             } finally {
                 setLoading(false);
             }
@@ -66,34 +35,102 @@ const TopArtists = () => {
 
     if (loading) {
         return (
-            <div style={containerStyle}>
-                <h1 style={headerStyle}>Loading...</h1>
-            </div>
+            <Box
+                sx={{
+                    textAlign: 'center',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography variant="h3" color="white">
+                    Loading...
+                </Typography>
+            </Box>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <h1 style={headerStyle}>Top Artists</h1>
-            <ul style={listStyle}>
+        <Box
+            sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                bgcolor: 'inherit', // Ensure it uses the inherited background color
+                color: 'white', // White text for readability
+                padding: '20px',
+            }}
+        >
+            {/* Title */}
+            <Typography
+                variant="h2"
+                sx={{
+                    mb: 4,
+                    color: 'white',
+                    fontWeight: 'bold',
+                }}
+            >
+                Top Artists
+            </Typography>
+
+            {/* List */}
+            <List
+                sx={{
+                    width: '100%',
+                    maxWidth: 700, // Increased max width for larger list area
+                    margin: '0 auto',
+                    padding: 0,
+                    bgcolor: 'transparent', // Prevent default List background
+                }}
+            >
                 {topArtists.length > 0 ? (
                     topArtists.map((artist, index) => (
-                        <li
+                        <ListItem
                             key={artist.id}
-                            style={getArtistStyle(artist.id)}
+                            sx={{
+                                transform: hoveredArtist === artist.id ? 'scale(1.1)' : 'scale(1)',
+                                transition: 'transform 0.3s ease',
+                                margin: '20px 0',
+                                cursor: 'pointer',
+                            }}
                             onMouseEnter={() => setHoveredArtist(artist.id)}
                             onMouseLeave={() => setHoveredArtist(null)}
                         >
-                            {index + 1}. {artist.name}
-                        </li>
+                            <ListItemText
+                                primary={`${index + 1}. ${artist.name}`}
+                                primaryTypographyProps={{
+                                    sx: {
+                                        fontSize: '3rem', // Explicitly set the font size
+                                        textAlign: 'center',
+                                        fontWeight: 'bold', // Bold text for emphasis
+                                        color: 'white', // White color for visibility
+                                    },
+                                }}
+                            />
+                        </ListItem>
                     ))
                 ) : (
-                    <li style={{ fontSize: '1.5em' }}>
-                        No top artists found.
-                    </li>
+                    <ListItem>
+                        <ListItemText
+                            primary="No top artists found."
+                            primaryTypographyProps={{
+                                sx: {
+                                    fontSize: '2rem',
+                                    textAlign: 'center',
+                                    color: 'white',
+                                },
+                            }}
+                        />
+                    </ListItem>
                 )}
-            </ul>
-        </div>
+            </List>
+        </Box>
     );
 };
 
