@@ -1,27 +1,30 @@
 import React from 'react';
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, useTheme, useMediaQuery } from '@mui/material';
 import Logo from '../components/Logo';
 
 const Summary = ({ genres, songs, artists }) => {
+    const theme = useTheme(); // Access the current theme
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screens
+
     const sectionStyle = {
         flex: 1, // Make each section equally wide
-        padding: '20px',
+        padding: isMobile ? '10px' : '20px', // Adjust padding for mobile
         textAlign: 'center',
     };
 
     const listStyle = {
         margin: '0 auto',
         padding: 0,
-        maxWidth: 400,
+        maxWidth: isMobile ? 300 : 400, // Adjust list width for mobile
         bgcolor: 'transparent',
     };
 
     const listItemTextProps = {
         sx: {
-            fontSize: '1.5rem', // Slightly smaller font for summary
+            fontSize: isMobile ? '1rem' : '1.5rem', // Adjust font size for mobile
             textAlign: 'center',
             fontWeight: 900,
-            color: 'white',
+            color: theme.palette.text.primary, // Dynamically adapt text color
         },
     };
 
@@ -31,29 +34,39 @@ const Summary = ({ genres, songs, artists }) => {
                 display: 'flex',
                 flexDirection: 'column', // Stack title on top and lists below
                 alignItems: 'center',
-                bgcolor: 'inherit',
-                color: 'white',
-                height: '100%',
-                padding: '20px',
+                bgcolor: 'inherit', // Ensure it inherits the background color
+                color: theme.palette.text.primary, // Dynamically adapt text color
+                height: '100%', // Full height container
+                padding: isMobile ? '10px' : '20px',
+                overflow: 'auto', // Allow scrolling for the entire container
             }}
         >
             {/* Logo as Title */}
-            <Logo fontSize="80px" />
+            <Logo fontSize={isMobile ? '50px' : '80px'} /> {/* Adjust logo size for mobile */}
 
             {/* Horizontal Stack of Lists */}
             <Box
                 sx={{
                     display: 'flex',
-                    flexDirection: 'row',
+                    flexDirection: isMobile ? 'column' : 'row', // Stack vertically on mobile
                     justifyContent: 'space-around',
-                    alignItems: 'flex-start',
+                    alignItems: isMobile ? 'center' : 'flex-start',
                     width: '100%',
-                    mt: 4, // Add margin-top for spacing below the title
+                    mt: isMobile ? 2 : 4, // Adjust margin-top for mobile
+                    overflowY: isMobile ? 'auto' : 'unset', // Allow scrolling on mobile
+                    height: isMobile ? 'auto' : '100%', // Dynamic height for mobile
                 }}
             >
                 {/* Top Genres */}
                 <Box sx={sectionStyle}>
-                    <Typography variant="h4" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mb: isMobile ? 1 : 2, // Adjust margin for mobile
+                            color: theme.palette.text.primary, // Dynamic title color
+                            fontSize: isMobile ? '1.2rem' : '1.5rem', // Adjust font size for mobile
+                        }}
+                    >
                         Top Genres
                     </Typography>
                     <List sx={listStyle}>
@@ -70,7 +83,14 @@ const Summary = ({ genres, songs, artists }) => {
 
                 {/* Top Artists */}
                 <Box sx={sectionStyle}>
-                    <Typography variant="h4" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mb: isMobile ? 1 : 2, // Adjust margin for mobile
+                            color: theme.palette.text.primary, // Dynamic title color
+                            fontSize: isMobile ? '1.2rem' : '1.5rem', // Adjust font size for mobile
+                        }}
+                    >
                         Top Artists
                     </Typography>
                     <List sx={listStyle}>
@@ -87,7 +107,14 @@ const Summary = ({ genres, songs, artists }) => {
 
                 {/* Top Songs */}
                 <Box sx={sectionStyle}>
-                    <Typography variant="h4" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mb: isMobile ? 1 : 2, // Adjust margin for mobile
+                            color: theme.palette.text.primary, // Dynamic title color
+                            fontSize: isMobile ? '1.2rem' : '1.5rem', // Adjust font size for mobile
+                        }}
+                    >
                         Top Songs
                     </Typography>
                     <List sx={listStyle}>

@@ -1,141 +1,184 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import {AppBar, IconButton, InputAdornment, LinearProgress, Stack} from "@mui/material";
-import TextField from '@mui/material/TextField';
-import Snackbar from "@mui/material/Snackbar";
-import Button from "@mui/material/Button";
+import React, { useState } from "react";
+import {
+  Snackbar,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Button,
+  Stack,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Logo from "../components/Logo";
-import { ThemeProvider } from "@mui/material/styles";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import theme from '../Theme'
 import { getCookie } from "../csrf/csrf";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
+import { ThemeProvider, useTheme } from "@mui/material/styles";
 
 function SignIn() {
-    const navigate = useNavigate();
-    const handleGoBack = () => {
-        navigate("/login")
-    }
+  const theme = useTheme(); // Hook to use the current theme
+  const navigate = useNavigate();
 
-    const [formErrors, setFormErrors] = useState('');
-    const [serverError, setServerError] = useState('');
-    const dismissServerErrors = () => setServerError('')
+  const [formErrors, setFormErrors] = useState('');
+  const [serverError, setServerError] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-    const [username, setUsername] = useState('');
-    const handleUsernameChange = e => {
-        setUsername(e.target.value)
-        if(formErrors.length !== 0)
-            setFormErrors('')
-    }
-    const [password, setPassword] = useState('');
-    const handlePasswordChange = e => {
-        setPassword(e.target.value);
-        if(formErrors.length !== 0)
-            setFormErrors('')
-    }
+  const dismissServerErrors = () => setServerError('');
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    if (formErrors) setFormErrors('');
+  };
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (formErrors) setFormErrors('');
+  };
 
-    const handleSignIn = () => {
-        setFormErrors('')
-        axios.post('api/user/login/', {username, password}, {
-            headers: {'X-CSRFToken': getCookie('csrftoken')},
-            withCredentials: true
-        })
-        .then(res => navigate('/profile'))
-        .catch(ex => {
-            console.log(ex)
-            const res = ex.response
-            if(res && 'status' in res && res.status === 400)
-                setFormErrors(res.data.error)
-            else {
-                setServerError(`An error has occurred in the server (error code ${res.status})`)
-                console.error(res)
-            }
-        })
-    };
+  const handleSignIn = () => {
+    setFormErrors('');
+    axios
+      .post('api/user/login/', { username, password }, {
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        withCredentials: true,
+      })
+      .then(() => navigate('/profile'))
+      .catch((ex) => {
+        const res = ex.response;
+        if (res?.status === 400) {
+          setFormErrors(res.data.error);
+        } else {
+          setServerError(`An error occurred (error code ${res?.status})`);
+          console.error(res);
+        }
+      });
+  };
 
-    const [showPassword, setShowPassword] = useState(false);
-    const handleTogglePasswordVisibility = () => {setShowPassword(!showPassword)};
+  const handleTogglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
-    return (
-        <ThemeProvider theme = {theme}>
-            <Snackbar 
-                open={serverError.length !== 0}
-                autoHideDuration={5000}
-                onClose={dismissServerErrors}
-                anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-                message={serverError}
-            />
-            <Button 
-            startIcon = {<ArrowBackIcon />} 
-            onClick={handleGoBack}
-            sx = {{
-                position: "absolute",
-                top: 16,
-                left: 16,
-                color: "#486284",
-                fontWeight: 900
-            }}
-            >
-            Back
-            </Button>
-            
-        
-            <Stack 
-            direction= 'column'
-            
-            sx = {{
-                    display: 'flex',
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    height: '100vh',
-                    gap: 3,
-                    mx: 'auto',
-                
-                    
-            }}
-            >
-            <Logo fontSize="100px"  />
-            {/* Username Field */}
-            <TextField id="username" label="Username" variant="outlined" autoComplete="username" sx ={{
-                width: '500px',
-            }}
-            value={username}
-            onChange={handleUsernameChange}
-            error={formErrors.length !== 0}
-            />
-            {/* Password field  :D*/}
-            <TextField id = 'password' label= "Password" type={showPassword ? "text" : "password"} variant="outlined" autoComplete="password" sx={{
-                width: '500px',
-            }}
-            value={password}
-            onChange={handlePasswordChange}
-            error={formErrors.length !== 0}
-            helperText={formErrors}
+  const handleGoBack = () => {
+    navigate('/login');
+  };
 
-           InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">
-                        <IconButton onClick={handleTogglePasswordVisibility} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                    </InputAdornment>
-                ),
-            }}
-            />
+  return (
+    <ThemeProvider theme={theme}>
+      <Snackbar
+        open={!!serverError}
+        autoHideDuration={5000}
+        onClose={dismissServerErrors}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        message={serverError}
+      />
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={handleGoBack}
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          color: theme.palette.primary.main,
+          fontWeight: 900,
+          fontSize: { xs: '0.8rem', sm: '1rem' }, // Responsive font size
+        }}
+      >
+        Back
+      </Button>
 
-            {/* Spotify Auth  C */}
-            <Button  sx =
-            {{ color: "#FFFF",
-                backgroundColor: "#486284",
-                width: '500px',
-                fontFamily: '"League Spartan", sans-serif',
-                fontWeight: 900
-            }}
-            variant='text' onClick={handleSignIn}> Sign In </Button>
-            </Stack>
-        </ThemeProvider>
-    );
+      <Stack
+        direction="column"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          gap: 3,
+          padding: { xs: 2, sm: 4 }, // Padding for smaller screens
+        }}
+      >
+        <Logo fontSize={{ xs: '70px', sm: '90px', md: '100px' }} />
+
+        {/* Username Field */}
+        <TextField
+          id="username"
+          label="Username"
+          variant="outlined"
+          autoComplete="username"
+          value={username}
+          onChange={handleUsernameChange}
+          error={!!formErrors}
+          sx={{
+            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.primary.dark,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.dark,
+              },
+            },
+          }}
+        />
+
+        {/* Password Field */}
+        <TextField
+          id="password"
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          variant="outlined"
+          autoComplete="password"
+          value={password}
+          onChange={handlePasswordChange}
+          error={!!formErrors}
+          helperText={formErrors}
+          sx={{
+            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.primary.dark,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.dark,
+              },
+            },
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleTogglePasswordVisibility} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        {/* Sign-In Button */}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.mode === 'light' ? '#FFFFFF' : '#000000', // Adjust button text color dynamically
+            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
+            fontFamily: '"League Spartan", sans-serif',
+            fontWeight: 900,
+            fontSize: { xs: '0.8rem', sm: '1rem' }, // Responsive font size
+            '&:hover': {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          }}
+          onClick={handleSignIn}
+        >
+          Sign In
+        </Button>
+      </Stack>
+    </ThemeProvider>
+  );
 }
 
 export default SignIn;
