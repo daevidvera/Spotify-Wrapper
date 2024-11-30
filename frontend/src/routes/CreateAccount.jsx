@@ -17,6 +17,7 @@ import { AuthContext } from "../contexts/AuthProvider";
 import Logo from "../components/Logo";
 import SpotifyPreview from "../components/SpotifyPreview";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useTranslation } from "react-i18next"; // Import translation hook
 
 function CreateAccount() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ function CreateAccount() {
   const { checkUserAuth } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { t } = useTranslation(); // Access translations
 
   const searchParams = Object.fromEntries(new URLSearchParams(location.search));
   const [formData, setFormData] = useState({
@@ -58,7 +60,7 @@ function CreateAccount() {
           setFormErrors(res.data);
         } else {
           setServerError(
-            `An error has occurred in the server (error code ${res.status})`
+            `${t("serverError")} (error code ${res.status})`
           );
           console.error(res);
         }
@@ -102,7 +104,7 @@ function CreateAccount() {
             textAlign: "center",
           }}
         >
-          Back
+          {t("back")}
         </Button>
       </Box>
 
@@ -125,7 +127,7 @@ function CreateAccount() {
         {/* Username Field */}
         <TextField
           id="username"
-          label="Username"
+          label={t("username")}
           variant="outlined"
           autoComplete="username"
           sx={{
@@ -140,7 +142,7 @@ function CreateAccount() {
         {/* Email Field */}
         <TextField
           id="email"
-          label="Email"
+          label={t("email")}
           variant="outlined"
           autoComplete="email"
           sx={{
@@ -155,7 +157,7 @@ function CreateAccount() {
         {/* Password Field */}
         <TextField
           id="password"
-          label="Password"
+          label={t("password")}
           variant="outlined"
           type={showPassword ? "text" : "password"}
           autoComplete="password"
@@ -183,7 +185,7 @@ function CreateAccount() {
         {/* Confirm Password Field */}
         <TextField
           id="confirm-password"
-          label="Confirm Password"
+          label={t("confirmPassword")}
           variant="outlined"
           type={showPassword ? "text" : "password"}
           autoComplete="confirmed-password"
@@ -225,7 +227,7 @@ function CreateAccount() {
           variant="contained"
           onClick={handleFormSubmit}
         >
-          Register
+          {t("register")}
         </Button>
       </Stack>
     </>

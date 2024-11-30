@@ -6,6 +6,7 @@ import {useNavigate} from 'react-router-dom';
 import Fade from '@mui/material/Fade';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+<<<<<<< Updated upstream
 
 // Login page
 
@@ -16,6 +17,15 @@ import axios from 'axios';
 
 function Login() {
     const [showLogo, setShowLogo] = useState(false);
+=======
+import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+
+function Login() {
+    const [showLogo, setShowLogo] = useState(false);
+    const theme = useTheme(); // Access the current theme
+    const { t } = useTranslation(); // Hook to access translations
+>>>>>>> Stashed changes
 
     useEffect(() => {setShowLogo(true)}, [])
 
@@ -29,11 +39,11 @@ function Login() {
             if (res.data && res.data.auth_url) {
                 window.location = res.data.auth_url;
             } else {
-                throw new Error('No auth URL returned');
+                throw new Error(t('noAuthUrlError'));
             }
         } catch (ex) {
             console.error(ex);
-            window.alert('An error has occurred when reaching Spotify. See console for more details');
+            window.alert(t('spotifyError'));
         }
     }
 
@@ -64,7 +74,7 @@ function Login() {
                     variant="outlined"
                     onClick={handleSignIn}
                 >
-                    Sign In
+                    {t('signIn')} {/* Translated "Sign In" */}
                 </Button>
             </Fade>
 
@@ -79,7 +89,7 @@ function Login() {
                     variant="outlined"
                     onClick={handleCreateAccount}
                 >
-                    Create Account
+                    {t('createAccount')} {/* Translated "Create Account" */}
                 </Button>
             </Fade>
         </Stack>

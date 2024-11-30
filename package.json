@@ -3,6 +3,10 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.1.5",
-    "prop-types": "^15.8.1"
+    "i18next": "^24.0.2",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-http-backend": "^3.0.1",
+    "prop-types": "^15.8.1",
+    "react-i18next": "^15.1.3"
   }
 }

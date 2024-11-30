@@ -14,17 +14,20 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logo from "./Logo";
-import { useTheme } from "@mui/material/styles"; // Use theme hook
+import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { UserContext } from "../contexts/UserProvider";
 
-function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) {
+function Navbar({ buttons }) {
   const { user, userDataLoading } = useContext(UserContext);
   const profileImg = user?.profile_img || "/path-to-default-avatar.jpg";
 
   const isMobile = useMediaQuery("(max-width:600px)");
-  const theme = useTheme(); // Access the current theme
+  const theme = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navigateProfile = () => {
@@ -46,25 +49,29 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) {
     setDrawerOpen(false);
   };
 
+  const translatedButtons = [
+    t("home") || "Home",
+    t("contact") || "Contact",
+    t("profile") || "Profile",
+    t("signOut") || "Sign Out",
+  ];
+
   return (
     <AppBar
       position="static"
       sx={{
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.text.primary,
-        padding: isMobile ? "8px 16px" : "8px 98px", // Adjust padding for mobile and desktop
+        padding: isMobile ? "8px 16px" : "8px 98px",
         boxShadow: "none",
         borderBottom: `1px solid ${theme.palette.divider}`,
       }}
     >
       <Toolbar>
-        {/* Logo */}
         <Logo fontSize={isMobile ? "20px" : "30px"} />
 
-        {/* Responsive Navigation */}
         {isMobile ? (
           <>
-            {/* Hamburger Menu for Mobile */}
             <IconButton
               edge="end"
               onClick={() => setDrawerOpen(true)}
@@ -74,7 +81,6 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) {
               <MenuIcon />
             </IconButton>
 
-            {/* Drawer for Mobile Navigation */}
             <Drawer
               anchor="right"
               open={drawerOpen}
@@ -88,105 +94,89 @@ function Navbar({ buttons = ["Home", "Contact", "Profile", "Sign Out"] }) {
             >
               <Box sx={{ width: 250 }} role="presentation">
                 <List>
-                  {buttons.includes("Home") && (
-                    <ListItem button onClick={navigateHome}>
-                      <ListItemText primary="Home" />
-                    </ListItem>
-                  )}
-                  {buttons.includes("Contact") && (
-                    <ListItem button onClick={navigateContact}>
-                      <ListItemText primary="Contact" />
-                    </ListItem>
-                  )}
-                  {buttons.includes("Profile") && (
-                    <ListItem
-                      button
-                      onClick={userDataLoading ? null : navigateProfile}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                      }}
-                    >
-                      {userDataLoading ? (
-                        <CircularProgress size={24} sx={{ color: theme.palette.text.primary }} />
-                      ) : (
-                        <img
-                          src={profileImg}
-                          alt="Profile"
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: "50%",
-                            border: `2px solid ${theme.palette.divider}`,
-                          }}
-                        />
-                      )}
-                      <ListItemText primary="Profile" />
-                    </ListItem>
-                  )}
-                  {buttons.includes("Sign Out") && (
-                    <ListItem
-                      button
-                      sx={{
-                        backgroundColor: theme.palette.primary.main,
-                        color: theme.palette.primary.contrastText,
-                        borderRadius: "10px",
-                        textAlign: "center",
-                      }}
-                      onClick={navigateSignOut}
-                    >
-                      <ListItemText primary="Sign Out" />
-                    </ListItem>
-                  )}
+                  <ListItem button onClick={navigateHome}>
+                    <ListItemText primary={translatedButtons[0]} />
+                  </ListItem>
+                  <ListItem button onClick={navigateContact}>
+                    <ListItemText primary={translatedButtons[1]} />
+                  </ListItem>
+                  <ListItem
+                    button
+                    onClick={userDataLoading ? null : navigateProfile}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    {userDataLoading ? (
+                      <CircularProgress size={24} sx={{ color: theme.palette.text.primary }} />
+                    ) : (
+                      <img
+                        src={profileImg}
+                        alt="Profile"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: "50%",
+                          border: `2px solid ${theme.palette.divider}`,
+                        }}
+                      />
+                    )}
+                    <ListItemText primary={translatedButtons[2]} />
+                  </ListItem>
+                  <ListItem
+                    button
+                    sx={{
+                      backgroundColor: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
+                      borderRadius: "10px",
+                      textAlign: "center",
+                    }}
+                    onClick={navigateSignOut}
+                  >
+                    <ListItemText primary={translatedButtons[3]} />
+                  </ListItem>
                 </List>
               </Box>
             </Drawer>
           </>
         ) : (
           <Box sx={{ display: "flex", gap: 2, ml: "auto" }}>
-            {buttons.includes("Home") && (
-              <Button onClick={navigateHome} sx={{ color: theme.palette.text.primary }}>
-                Home
+            <Button onClick={navigateHome} sx={{ color: theme.palette.text.primary }}>
+              {translatedButtons[0]}
+            </Button>
+            <Button onClick={navigateContact} sx={{ color: theme.palette.text.primary }}>
+              {translatedButtons[1]}
+            </Button>
+            {userDataLoading ? (
+              <CircularProgress sx={{ color: theme.palette.text.primary }} />
+            ) : (
+              <Button onClick={navigateProfile} sx={{ padding: 0 }}>
+                <img
+                  src={profileImg}
+                  alt="Profile"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    border: `2px solid ${theme.palette.divider}`,
+                  }}
+                />
               </Button>
             )}
-            {buttons.includes("Contact") && (
-              <Button onClick={navigateContact} sx={{ color: theme.palette.text.primary }}>
-                Contact
-              </Button>
-            )}
-            {buttons.includes("Profile") && (
-              userDataLoading ? (
-                <CircularProgress sx={{ color: theme.palette.text.primary }} />
-              ) : (
-                <Button onClick={navigateProfile} sx={{ padding: 0 }}>
-                  <img
-                    src={profileImg}
-                    alt="Profile"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
-                      border: `2px solid ${theme.palette.divider}`,
-                    }}
-                  />
-                </Button>
-              )
-            )}
-            {buttons.includes("Sign Out") && !userDataLoading && (
-              <Button
-                onClick={navigateSignOut}
-                sx={{
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
-                  borderRadius: "90px",
-                  fontWeight: 900,
-                  padding: "5px 20px",
-                }}
-              >
-                Sign Out
-              </Button>
-            )}
+            <Button
+              onClick={navigateSignOut}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+                borderRadius: "90px",
+                fontWeight: 900,
+                padding: "5px 20px",
+              }}
+            >
+              {translatedButtons[3]}
+            </Button>
           </Box>
         )}
       </Toolbar>

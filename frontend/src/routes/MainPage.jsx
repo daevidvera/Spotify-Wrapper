@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Button, Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next"; // Import useTranslation hook
 import NavBar from "../components/NavBar";
 
 function MainPage({ toggleTheme, currentMode }) {
+    const { t } = useTranslation(); // Access the translation function
     const navigate = useNavigate();
     const theme = useTheme(); // Access the theme
 
@@ -25,7 +27,7 @@ function MainPage({ toggleTheme, currentMode }) {
         >
             {/* Navbar at the top */}
             <NavBar
-                buttons={["Contact", "Profile", "Sign Out"]}
+                buttons={[t("contact"), t("profile"), t("signOut")]} // Use translations for Navbar buttons
                 toggleTheme={toggleTheme}
                 currentMode={currentMode}
             />
@@ -80,7 +82,7 @@ function MainPage({ toggleTheme, currentMode }) {
                             },
                         }}
                     >
-                        Welcome @user!
+                        {t("welcomeUser", { user: "@user" })} {/* Dynamic welcome message */}
                     </Typography>
 
                     {/* Stack for Buttons */}
@@ -125,39 +127,9 @@ function MainPage({ toggleTheme, currentMode }) {
                                 },
                             }}
                         >
-                            getmyWrap
+                            {t("getMyWrap")}
                         </Button>
 
-                        {/* duoWrap Button */}
-                        <Button
-                            onClick={navigatemyDuoWrap}
-                            sx={{
-                                width: "100%",
-                                maxWidth: {
-                                    xs: "200px",
-                                    sm: "400px",
-                                    md: "500px",
-                                    lg: "600px",
-                                },
-                                background: theme.palette.primary.main,
-                                color: theme.palette.primary.contrastText,
-                                fontWeight: 900,
-                                borderRadius: "90px",
-                                textTransform: "none",
-                                padding: { xs: 1, sm: 1.5, md: 2 },
-                                fontSize: {
-                                    xs: "0.875rem",
-                                    sm: "1rem",
-                                    md: "1.25rem",
-                                },
-                                transition: "transform 0.3s ease",
-                                "&:hover": {
-                                    transform: "scale(1.1)",
-                                },
-                            }}
-                        >
-                            duoWrap
-                        </Button>
 
                         {/* game Button */}
                         <Button
@@ -186,7 +158,7 @@ function MainPage({ toggleTheme, currentMode }) {
                                 },
                             }}
                         >
-                            game
+                            {t("game")}
                         </Button>
                     </Stack>
                 </Box>

@@ -5,13 +5,18 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< Updated upstream
 import { UserContext } from "../contexts/UserProvider.jsx";
+=======
+import { useTranslation } from 'react-i18next'; // Import translation hook
+>>>>>>> Stashed changes
 
 const Wrapper = () => {
     const theme = useTheme();
     const wrapperRef = useRef();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { t } = useTranslation(); // Access translations
     const [currentSection, setCurrentSection] = useState(0);
     const [genres, setGenres] = useState([]);
     const [songs, setSongs] = useState([]);
@@ -96,7 +101,7 @@ const Wrapper = () => {
     const saveWrapper = () => {
         const wrapperData = { genres, songs, artists };
         localStorage.setItem('savedWrapper', JSON.stringify(wrapperData));
-        alert('Wrapper saved successfully!');
+        alert(t('wrapperSaved')); // Translated alert
         navigate('/main');
     };
 
@@ -116,7 +121,7 @@ const Wrapper = () => {
                     color: theme.palette.text.primary,
                 }}
             >
-                Loading...
+                {t('loading')} {/* Translated loading message */}
             </Box>
         );
     }
@@ -165,7 +170,7 @@ const Wrapper = () => {
                     scrollSnapAlign: 'start',
                 }}
             >
-                <Typography variant="h2" sx={{ mb: 4 }}>Top Genres</Typography>
+                <Typography variant="h2" sx={{ mb: 4 }}>{t('topGenres')}</Typography>
                 <List>
                     {genres.length > 0 ? (
                         genres.map((genre, index) => (
@@ -177,7 +182,7 @@ const Wrapper = () => {
                             </ListItem>
                         ))
                     ) : (
-                        <Typography>No genres available.</Typography>
+                        <Typography>{t('noGenres')}</Typography>
                     )}
                 </List>
             </Box>
@@ -193,7 +198,7 @@ const Wrapper = () => {
                     scrollSnapAlign: 'start',
                 }}
             >
-                <Typography variant="h2" sx={{ mb: 4 }}>Top Artists</Typography>
+                <Typography variant="h2" sx={{ mb: 4 }}>{t('topArtists')}</Typography>
                 <List>
                     {artists.length > 0 ? (
                         artists.map((artist, index) => (
@@ -205,7 +210,7 @@ const Wrapper = () => {
                             </ListItem>
                         ))
                     ) : (
-                        <Typography>No artists available.</Typography>
+                        <Typography>{t('noArtists')}</Typography>
                     )}
                 </List>
             </Box>
@@ -221,21 +226,21 @@ const Wrapper = () => {
                     scrollSnapAlign: 'start',
                 }}
             >
-                <Typography variant="h2" sx={{ mb: 4 }}>Top Songs</Typography>
+                <Typography variant="h2" sx={{ mb: 4 }}>{t('topSongs')}</Typography>
                 <List>
                     {songs.length > 0 ? (
                         songs.map((song, index) => (
                             <ListItem key={index}>
                                 <ListItemText
                                     primary={`${index + 1}. ${song.title}`}
-                                    secondary={`Artist: ${song.artist}`}
+                                    secondary={`${t('artist')}: ${song.artist}`}
                                     primaryTypographyProps={{ sx: { fontSize: '1.5rem', textAlign: 'center' } }}
                                     secondaryTypographyProps={{ sx: { fontSize: '1rem', textAlign: 'center' } }}
                                 />
                             </ListItem>
                         ))
                     ) : (
-                        <Typography>No songs available.</Typography>
+                        <Typography>{t('noSongs')}</Typography>
                     )}
                 </List>
             </Box>
@@ -251,10 +256,10 @@ const Wrapper = () => {
                     scrollSnapAlign: 'start',
                 }}
             >
-                <Typography variant="h2" sx={{ mb: 4 }}>Summary</Typography>
+                <Typography variant="h2" sx={{ mb: 4 }}>{t('summary')}</Typography>
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>Top Genres</Typography>
+                        <Typography variant="h6" sx={{ mb: 2 }}>{t('topGenres')}</Typography>
                         <List>
                             {genres.slice(0, 5).map((genre, index) => (
                                 <ListItem key={index}>
@@ -267,7 +272,7 @@ const Wrapper = () => {
                         </List>
                     </Grid>
                     <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>Top Artists</Typography>
+                        <Typography variant="h6" sx={{ mb: 2 }}>{t('topArtists')}</Typography>
                         <List>
                             {artists.slice(0, 5).map((artist, index) => (
                                 <ListItem key={index}>
@@ -280,13 +285,13 @@ const Wrapper = () => {
                         </List>
                     </Grid>
                     <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>Top Songs</Typography>
+                        <Typography variant="h6" sx={{ mb: 2 }}>{t('topSongs')}</Typography>
                         <List>
                             {songs.slice(0, 5).map((song, index) => (
                                 <ListItem key={index}>
                                     <ListItemText
                                         primary={`${index + 1}. ${song.title}`}
-                                        secondary={`Artist: ${song.artist}`}
+                                        secondary={`${t('artist')}: ${song.artist}`}
                                         primaryTypographyProps={{ sx: { fontSize: '1rem' } }}
                                     />
                                 </ListItem>
@@ -314,6 +319,7 @@ const Wrapper = () => {
                 onClick={() => scrollToSection('up')}
                 disabled={currentSection === 0}
             >
+<<<<<<< Updated upstream
                 <ArrowUpwardIcon />
             </Fab>
 
@@ -336,6 +342,21 @@ const Wrapper = () => {
             >
                 <ArrowDownwardIcon />
             </Fab>
+=======
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={saveWrapper}
+                    sx={{
+                        padding: '10px 20px',
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                    }}
+                >
+                    {t('saveWrapper')} {/* Translated Save Button */}
+                </Button>
+            </Box>
+>>>>>>> Stashed changes
         </Box>
     );
 };

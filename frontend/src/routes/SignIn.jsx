@@ -14,41 +14,47 @@ import axios from "axios";
 import Logo from "../components/Logo";
 import { getCookie } from "../csrf/csrf";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 
 function SignIn() {
   const theme = useTheme(); // Hook to use the current theme
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Hook to use translations
 
-  const [formErrors, setFormErrors] = useState('');
-  const [serverError, setServerError] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formErrors, setFormErrors] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const dismissServerErrors = () => setServerError('');
+  const dismissServerErrors = () => setServerError("");
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
-    if (formErrors) setFormErrors('');
+    if (formErrors) setFormErrors("");
   };
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    if (formErrors) setFormErrors('');
+    if (formErrors) setFormErrors("");
   };
 
   const handleSignIn = () => {
-    setFormErrors('');
+    setFormErrors("");
     axios
-      .post('api/user/login/', { username, password }, {
-        headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        withCredentials: true,
-      })
-      .then(() => navigate('/profile'))
+      .post(
+        "api/user/login/",
+        { username, password },
+        {
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          withCredentials: true,
+        }
+      )
+      .then(() => navigate("/profile"))
       .catch((ex) => {
         const res = ex.response;
         if (res?.status === 400) {
           setFormErrors(res.data.error);
         } else {
-          setServerError(`An error occurred (error code ${res?.status})`);
+          setServerError(t("serverError", { code: res?.status || "unknown" }));
           console.error(res);
         }
       });
@@ -57,7 +63,7 @@ function SignIn() {
   const handleTogglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleGoBack = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -66,7 +72,7 @@ function SignIn() {
         open={!!serverError}
         autoHideDuration={5000}
         onClose={dismissServerErrors}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         message={serverError}
       />
       <Button
@@ -78,44 +84,45 @@ function SignIn() {
           left: 16,
           color: theme.palette.primary.main,
           fontWeight: 900,
-          fontSize: { xs: '0.8rem', sm: '1rem' }, // Responsive font size
+          fontSize: { xs: "0.8rem", sm: "1rem" }, // Responsive font size
         }}
       >
-        Back
+        {t("back")}
       </Button>
 
       <Stack
         direction="column"
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
           gap: 3,
           padding: { xs: 2, sm: 4 }, // Padding for smaller screens
         }}
       >
-        <Logo fontSize={{ xs: '70px', sm: '90px', md: '100px' }} />
+        <Logo fontSize={{ xs: "70px", sm: "90px", md: "100px" }} />
 
         {/* Username Field */}
         <TextField
           id="username"
-          label="Username"
+          label={t("username")}
           variant="outlined"
           autoComplete="username"
           value={username}
           onChange={handleUsernameChange}
           error={!!formErrors}
+          placeholder={t("usernamePlaceholder")}
           sx={{
-            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
+            width: { xs: "90%", sm: "80%", md: "500px" }, // Responsive width
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
                 borderColor: theme.palette.primary.main,
               },
-              '&:hover fieldset': {
+              "&:hover fieldset": {
                 borderColor: theme.palette.primary.dark,
               },
-              '&.Mui-focused fieldset': {
+              "&.Mui-focused fieldset": {
                 borderColor: theme.palette.primary.dark,
               },
             },
@@ -125,7 +132,7 @@ function SignIn() {
         {/* Password Field */}
         <TextField
           id="password"
-          label="Password"
+          label={t("password")}
           type={showPassword ? "text" : "password"}
           variant="outlined"
           autoComplete="password"
@@ -133,16 +140,17 @@ function SignIn() {
           onChange={handlePasswordChange}
           error={!!formErrors}
           helperText={formErrors}
+          placeholder={t("passwordPlaceholder")}
           sx={{
-            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
+            width: { xs: "90%", sm: "80%", md: "500px" }, // Responsive width
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
                 borderColor: theme.palette.primary.main,
               },
-              '&:hover fieldset': {
+              "&:hover fieldset": {
                 borderColor: theme.palette.primary.dark,
               },
-              '&.Mui-focused fieldset': {
+              "&.Mui-focused fieldset": {
                 borderColor: theme.palette.primary.dark,
               },
             },
@@ -150,7 +158,15 @@ function SignIn() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={handleTogglePasswordVisibility} edge="end">
+                <IconButton
+                  onClick={handleTogglePasswordVisibility}
+                  edge="end"
+                  aria-label={t(
+                    showPassword
+                      ? "togglePasswordVisibility.hide"
+                      : "togglePasswordVisibility.show"
+                  )}
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -163,18 +179,18 @@ function SignIn() {
           variant="contained"
           sx={{
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.mode === 'light' ? '#FFFFFF' : '#000000', // Adjust button text color dynamically
-            width: { xs: '90%', sm: '80%', md: '500px' }, // Responsive width
+            color: theme.palette.mode === "light" ? "#FFFFFF" : "#000000", // Adjust button text color dynamically
+            width: { xs: "90%", sm: "80%", md: "500px" }, // Responsive width
             fontFamily: '"League Spartan", sans-serif',
             fontWeight: 900,
-            fontSize: { xs: '0.8rem', sm: '1rem' }, // Responsive font size
-            '&:hover': {
+            fontSize: { xs: "0.8rem", sm: "1rem" }, // Responsive font size
+            "&:hover": {
               backgroundColor: theme.palette.primary.dark,
             },
           }}
           onClick={handleSignIn}
         >
-          Sign In
+          {t("signIn")}
         </Button>
       </Stack>
     </ThemeProvider>

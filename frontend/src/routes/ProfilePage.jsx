@@ -18,8 +18,10 @@ import { getCookie } from '../csrf/csrf';
 import axios from 'axios';
 import { UserContext } from '../contexts/UserProvider';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const ProfilePage = () => {
+  const { t } = useTranslation(); // Use translation function
   const theme = useTheme(); // Access the current theme
   const navigate = useNavigate();
   const [deletePromptVisible, setDeletePromptVisible] = useState(false);
@@ -47,19 +49,17 @@ const ProfilePage = () => {
     <ThemeProvider theme={theme}>
       <>
         <Dialog open={deletePromptVisible} onClose={toggleDeletePrompt}>
-          <DialogTitle>Delete Account</DialogTitle>
+          <DialogTitle>{t("deleteAccount")}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete your account? This action is irreversible.
-            </DialogContentText>
+            <DialogContentText>{t("deleteAccountPrompt")}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={toggleDeletePrompt}>Cancel</Button>
-            <Button onClick={handleDeleteAccount}>Confirm</Button>
+            <Button onClick={toggleDeletePrompt}>{t("cancel")}</Button>
+            <Button onClick={handleDeleteAccount}>{t("confirm")}</Button>
           </DialogActions>
         </Dialog>
         <Box>
-          <NavBar buttons={['Home', 'Contact', 'Sign Out']} />
+          <NavBar buttons={[t("home"), t("contact"), t("signOut")]} />
           <Box
             sx={{
               display: 'flex',
@@ -131,7 +131,7 @@ const ProfilePage = () => {
                     }}
                     onClick={toggleDeletePrompt}
                   >
-                    Delete Account
+                    {t("deleteAccount")}
                   </Button>
                 </Stack>
 
@@ -162,7 +162,7 @@ const ProfilePage = () => {
                       letterSpacing: 0.1,
                     }}
                   >
-                    My Wraps
+                    {t("myWraps")}
                   </Typography>
                 </Box>
               </>
