@@ -65,6 +65,7 @@ function Navbar({ buttons }) {
         padding: isMobile ? "8px 16px" : "8px 98px",
         boxShadow: "none",
         borderBottom: `1px solid ${theme.palette.divider}`,
+        zIndex: 1201, // Ensure it stays above other elements
       }}
     >
       <Toolbar>
@@ -132,6 +133,7 @@ function Navbar({ buttons }) {
                       color: theme.palette.primary.contrastText,
                       borderRadius: "10px",
                       textAlign: "center",
+                      mt: 1,
                     }}
                     onClick={navigateSignOut}
                   >
@@ -142,7 +144,16 @@ function Navbar({ buttons }) {
             </Drawer>
           </>
         ) : (
-          <Box sx={{ display: "flex", gap: 2, ml: "auto" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center", // Center align buttons horizontally
+              alignItems: "center",
+              flexGrow: 1, // Push buttons to the center
+              gap: 5, // Add spacing between buttons
+              marginRight: "130px"
+            }}
+          >
             <Button onClick={navigateHome} sx={{ color: theme.palette.text.primary }}>
               {translatedButtons[0]}
             </Button>
@@ -152,7 +163,14 @@ function Navbar({ buttons }) {
             {userDataLoading ? (
               <CircularProgress sx={{ color: theme.palette.text.primary }} />
             ) : (
-              <Button onClick={navigateProfile} sx={{ padding: 0 }}>
+              <Button
+                onClick={navigateProfile}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: 0,
+                }}
+              >
                 <img
                   src={profileImg}
                   alt="Profile"
