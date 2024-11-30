@@ -30,3 +30,11 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.username} ({self.email})'
+
+class SavedWrap(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="saved_wraps")  # Link to User
+    pdf_file = models.FileField(upload_to='user_wraps/', blank=False, null=False)  # Store PDF file
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp for when the wrap was saved
+
+    def __str__(self):
+        return f"Saved wrap for {self.user.username} ({self.created_at})"

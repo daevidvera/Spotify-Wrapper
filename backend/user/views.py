@@ -1,6 +1,7 @@
 
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import generics
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -8,8 +9,14 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from backend.utils import print_error
-from .models import User
+from .models import User, SavedWrap
 from .serializers import UserRegisterSerializer, UserSerializer
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from .models import SavedWrap
 
 
 # User registration API
@@ -44,7 +51,6 @@ class RegisterView(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
-
 
 
 # User login API
@@ -101,3 +107,75 @@ class AuthCheckView(APIView):
         except:
             pass
         return Response({'authenticated': False})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_wrapper(request):
+    """
+    Saves a user's wrapper data as a PDF.
+    """
+    # Ensure the request contains the necessary data
+    print(request)
+    wrapper_data = request.data.get('wrapper_data')
+    if not wrapper_data:
+        return Response({'error': 'wrapper_data is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        display_name = request.data.get('display_name')  # Automatically use the logged-in user
+        genres = wrapper_data.get('genres', [])
+        artists = wrapper_data.get('artists', [])
+        songs = wrapper_data.get('songs', [])
+
+        # Generate PDF from the provided data
+        pdf_buffer = BytesIO()
+        c = canvas.Canvas(pdf_buffer, pagesize=letter)
+        c.drawString(100, 750, f"User: {display_name}")
+        c.drawString(100, 730, "Top Genres:")
+        for idx, genre in enumerate(genres, start=1):
+            c.drawString(100, 730 - idx * 20, f"{idx}. {genre}")
+
+        c.drawString(100, 730 - (len(genres) + 1) * 20, "Top Artists:")
+        for idx, artist in enumerate(artists, start=1):
+            c.drawString(100, 730 - (len(genres) + 1 + idx) * 20, f"{idx}. {artist}")
+
+        c.drawString(100, 730 - (len(genres) + len(artists) + 2) * 20, "Top Songs:")
+        for idx, song in enumerate(songs, start=1):
+            c.drawString(100, 730 - (len(genres) + len(artists) + 2 + idx) * 20,
+                         f"{idx}. {song['title']} - {song['artist']}")
+
+        c.showPage()
+        c.save()
+
+        # Save the generated PDF as a new SavedWrap instance
+        pdf_buffer.seek(0)
+        saved_wrap = SavedWrap.objects.create(
+            user=user,  # Associate wrap with current logged-in user
+            pdf_file=ContentFile(pdf_buffer.read(), name='wrap.pdf')  # Store PDF
+        )
+
+        return Response({"message": "Wrapper saved successfully!"}, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_saved_wraps(request):
+    """
+    Fetches a list of all saved wraps (PDFs) for the logged-in user.
+    """
+    try:
+        user = request.user  # Automatically get the logged-in user
+        wraps = SavedWrap.objects.filter(user=user)  # Get all saved wraps for the current user
+
+        if not wraps:
+            return Response({"message": "No saved wraps found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Return a list of saved wraps with their metadata
+        wraps_data = [{"id": wrap.id, "created_at": wrap.created_at, "pdf_url": wrap.pdf_file.url} for wrap in wraps]
+        return Response({"saved_wraps": wraps_data}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -5,8 +5,12 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { saveAs } from 'file-saver';
+import { jsPDF } from 'jspdf';
+import {getCookie} from "../csrf/csrf.jsx";
 <<<<<<< Updated upstream
 import { UserContext } from "../contexts/UserProvider.jsx";
+
 =======
 import { useTranslation } from 'react-i18next'; // Import translation hook
 >>>>>>> Stashed changes
@@ -75,8 +79,6 @@ const Wrapper = () => {
         }
     };
 
-
-    // Handle IntersectionObserver to track visible section
     useEffect(() => {
         const sections = wrapperRef.current?.children;
         if (!sections) return;
@@ -98,11 +100,58 @@ const Wrapper = () => {
         return () => observer.disconnect(); // Cleanup observer on unmount
     }, []);
 
-    const saveWrapper = () => {
+    const saveWrapper = async () => {
         const wrapperData = { genres, songs, artists };
-        localStorage.setItem('savedWrapper', JSON.stringify(wrapperData));
-        alert(t('wrapperSaved')); // Translated alert
-        navigate('/main');
+
+        // Generate PDF using jsPDF
+        const doc = new jsPDF();
+
+        // Add the user's wrapper data into the PDF
+        doc.setFontSize(16);
+        doc.text('Wrapper Summary', 20, 20);
+        doc.text(`Top Genres:`, 20, 30);
+        genres.forEach((genre, index) => {
+            doc.text(`${index + 1}. ${genre}`, 20, 40 + index * 10);
+        });
+
+        doc.text(`Top Artists:`, 20, 50 + genres.length * 10);
+        artists.forEach((artist, index) => {
+            doc.text(`${index + 1}. ${artist}`, 20, 60 + (genres.length + index) * 10);
+        });
+
+        doc.text(`Top Songs:`, 20, 70 + (genres.length + artists.length) * 10);
+        songs.forEach((song, index) => {
+            doc.text(`${index + 1}. ${song.title} - ${song.artist}`, 20, 80 + (genres.length + artists.length + index) * 10);
+        });
+
+        // Convert the PDF to a Blob and save it as a file
+        const pdfBlob = doc.output('blob');
+
+        // Upload the PDF to the server
+        const formData = new FormData();
+        formData.append('wrapper_data', pdfBlob, 'wrap.pdf');
+
+        try {
+            const response = await axios.post('/api/user/save-wrapper/', {
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                params: {
+                    display_name: user.user.display_name,
+                },
+                withCredentials: true,
+                data: formData
+
+            });
+
+            if (response.status === 201) {
+                alert('Wrapper saved successfully!');
+                navigate('/main');
+            }
+        } catch (error) {
+            console.error('Error saving the wrapper:', error);
+            alert('Failed to save wrapper.');
+        }
     };
 
     const goToProfile = () => {
@@ -301,27 +350,32 @@ const Wrapper = () => {
                 </Grid>
             </Box>
 
-            {/* Navigation Buttons */}
-            <Fab
+            <Button
+                onClick={saveWrapper}
+                variant="contained"
                 sx={{
                     position: 'fixed',
-                    bottom: '100px',
-                    right: '20px',
-                    backgroundColor: currentSection > 0 ? theme.palette.primary.main : theme.palette.grey[400],
+                    top: isMobile ? '10px' : '20px', // Adjust position for mobile
+                    left: isMobile ? '10px' : '20px', // Adjust position for mobile
+                    zIndex: 999,
+                    backgroundColor: theme.palette.primary.main,
                     color: theme.palette.primary.contrastText,
-                    width: '56px',
-                    height: '56px',
+                    fontWeight: 600,
+                    padding: isMobile ? '6px 10px' : '8px 16px', // Adjust padding for mobile
+                    borderRadius: '8px',
+                    fontSize: isMobile ? '0.7rem' : '1rem', // Adjust font size for mobile
                     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
                     '&:hover': {
-                        backgroundColor: currentSection > 0 ? theme.palette.primary.dark : theme.palette.grey[400],
+                        backgroundColor: theme.palette.primary.dark,
                     },
                 }}
-                onClick={() => scrollToSection('up')}
-                disabled={currentSection === 0}
             >
+                Save Wrapper
+            </Button>
+
+
 <<<<<<< Updated upstream
                 <ArrowUpwardIcon />
-            </Fab>
 
             <Fab
                 sx={{
