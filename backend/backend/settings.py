@@ -14,6 +14,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,6 +37,9 @@ FRONT_END_ORIGIN = config('FRONT_END_ORIGIN')
 
 ALLOWED_HOSTS = []
 
+SESSION_COOKIE_SAMESITE = None  # Allow cross-origin cookies
+SESSION_COOKIE_SECURE = USING_HTTPS
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -56,13 +60,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # Move this up
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -142,11 +146,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configure CORS
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
-    FRONT_END_ORIGIN
-
+    FRONT_END_ORIGIN,
 ]
-
 CORS_ALLOW_HEADERS = [
     'Authorization',
     'Content-Type',

@@ -1,113 +1,141 @@
-from django.utils.timezone import now, timedelta
-from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import status
-from spotipy import Spotify, SpotifyOAuth
-from django.utils.crypto import get_random_string
-from django.http import HttpResponseRedirect
-from collections import Counter
-from urllib.parse import urlencode
-from user.models import User
-from backend.utils import print_error
+from rest_framework.permissions import AllowAny
+import secrets
 from django.conf import settings
+from backend.utils import print_error
+from rest_framework import status
+from django.shortcuts import redirect
+from django.utils import timezone
+from django.http import HttpResponseRedirect
+from urllib.parse import urlencode
+import base64
+import requests
+from user.models import User
 
-# Initialize Spotify OAuth (configure scope and redirect URI)
-sp_oauth = SpotifyOAuth(
-    client_id=settings.SPOTIFY_CLIENT_ID,
-    client_secret=settings.SPOTIFY_SECRET,
-    redirect_uri=settings.SPOTIFY_REDIRECT_URI,
-    scope="user-read-email user-top-read"
-)
-
-def get_valid_token(session):
-    """
-    Ensure the access token is valid and refresh it if expired.
-    """
-    access_token = session.get('access_token')
-    refresh_token = session.get('refresh_token')
-    last_refresh = session.get('last_refresh')
-
-    if not access_token or not refresh_token or not last_refresh:
-        return None
-
-    # Check if the token has expired
-    last_refresh_time = now() - timedelta(seconds=3600)  # Simulate token expiration
-    token_info = sp_oauth.get_cached_token()
-
-    if not token_info or now() >= last_refresh_time + timedelta(seconds=token_info['expires_in']):
-        try:
-            token_info = sp_oauth.refresh_access_token(refresh_token)
-            session['access_token'] = token_info.get('access_token')
-            session['refresh_token'] = token_info.get('refresh_token', refresh_token)
-            session['last_refresh'] = now().isoformat()
-        except Exception as e:
-            print(f"Error refreshing token: {str(e)}")
-            return None
-
-    return session['access_token']
-
+# Generates Spotify auth link
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth_url(request):
-    # Generate a unique state parameter for CSRF protection
-    state = get_random_string(32)
-    request.session['spotify_auth_state'] = state  # Store in session for validation
+    print("Request Data: ", request.query_params)
 
-    # Generate the authorization URL with the state
-    auth_url = sp_oauth.get_authorize_url(state=state)
-    return Response({'auth_url': auth_url})
+    # Generate a random string for OAuth state
+    oauth_state = secrets.token_urlsafe(32)
 
+    # Create response object
+    response = Response({'message': 'Redirecting to Spotify login...'})
+
+    # Store state securely in a cookie
+    response.set_cookie(
+        'spotify_auth_state',
+        oauth_state,
+        httponly=True,
+        secure=True,
+        samesite='None',  # Required for cross-site cookies
+        max_age=300  # 5 minutes
+    )
+
+    # Create the authorization URL with the required scopes
+    params = {
+        'response_type': 'code',
+        'client_id': settings.SPOTIFY_CLIENT_ID,
+        'scope': 'user-read-email user-top-read',  # Include user-top-read scope
+        'redirect_uri': settings.SPOTIFY_REDIRECT_URI,
+        'state': oauth_state
+    }
+
+    # Build the authorization URL
+    auth_url = f'https://accounts.spotify.com/authorize?{urlencode(params)}'
+
+    # Include the authorization URL in the response
+    response.data = {'auth_url': auth_url}
+
+    return response
+
+# Handles Spotify authorization callback
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def auth_callback(request):
+    error = request.query_params.get('error')
     code = request.query_params.get('code')
     state = request.query_params.get('state')
 
-    print(f"Callback received with state: {state}")
+    if not state or (not error and not code):
+        print_error(f'Error occurred in auth callback: Missing request fields!')
+        return Response({'error': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Validate state
-    stored_state = request.session.get('spotify_auth_state')
-    if not state or state != stored_state:
-        print(f"State mismatch or missing. Received: {state}, Expected: {stored_state}")
-        return Response({'error': 'State mismatch'}, status=status.HTTP_400_BAD_REQUEST)
+    # If error exists, handle it
+    if error:
+        print_error(f'Error occurred in auth callback: {error}')
+        return Response({'error': 'Error in auth callback'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Clear state after validation to avoid reuse
-    del request.session['spotify_auth_state']
+    # Check if state matches state in cookies
+    oauth_state = request.COOKIES.get('spotify_auth_state')
 
-    # Retrieve tokens
-    try:
-        token_info = sp_oauth.get_access_token(code)
-    except Exception as e:
-        print(f"Error during token exchange: {str(e)}")
+    if not (oauth_state and oauth_state == state):
+        print_error(f'Error occurred in auth callback: OAuth states do not match!')
+        return Response({'error': 'OAuth state invalid'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Get access tokens using auth code (see https://developer.spotify.com/documentation/web-api/tutorials/code-flow)
+    payload = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': settings.SPOTIFY_REDIRECT_URI
+    }
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + base64.b64encode(
+            f"{settings.SPOTIFY_CLIENT_ID}:{settings.SPOTIFY_SECRET}".encode()).decode()
+    }
+
+    response = requests.post('https://accounts.spotify.com/api/token', data=payload, headers=headers)
+
+    # Check if access token request failed
+    if response.status_code != status.HTTP_200_OK:
+        print_error(f'Error occurred in auth callback: token exchange failed:\n{response.text}')
         return Response({'error': 'Token exchange failed'}, status=status.HTTP_400_BAD_REQUEST)
 
-    access_token = token_info.get("access_token")
-    refresh_token = token_info.get("refresh_token")
-    last_refresh = now()
+    response = response.json()
+    access_token = response.get('access_token')  # Store in session data for use in account creation
+    refresh_token = response.get('refresh_token')  # Store in session data for use in account creation
+    last_refresh = timezone.now()  # Store in session data for use in account creation
 
-    # Initialize Spotify client
-    sp = Spotify(auth=access_token)
+    # Retrieve user id for login/registration
 
-    # Retrieve user profile
-    try:
-        user_profile = sp.current_user()
-        print(f"User profile retrieved: {user_profile}")
-    except Exception as e:
-        print(f"Error retrieving user profile: {str(e)}")
-        return Response({'error': 'Failed to retrieve user profile'}, status=status.HTTP_400_BAD_REQUEST)
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
 
-    spotify_id = user_profile.get("id")
-    display_name = user_profile.get("display_name")
-    spotify_profile_url = user_profile.get("external_urls", {}).get("spotify")
-    profile_img = user_profile.get("images", [{}])[0].get("url", "") if user_profile.get("images") else None
-    email = user_profile.get("email", "")
+    response = requests.get('https://api.spotify.com/v1/me', headers=headers)
 
-    # Check if user exists, redirect to login if found
+    if response.status_code != status.HTTP_200_OK:
+        print_error(f'Error occurred in auth callback: failed to get user profile:\n{response.text}')
+        return Response({'error': 'Failed to retrieve user'}, status=status.HTTP_400_BAD_REQUEST)
+
+    response = response.json()
+    spotify_id = response.get('id')  # Store in session data for use in account creation
+    display_name = response.get('display_name')  # Store in URL Params (safe info)
+    external_urls = response.get('external_urls')
+    spotify_profile_url = external_urls['spotify']  # Store in URL Params (safe info)
+    images = response.get('images')
+    profile_img = images[0] if len(images) > 0 else None  # Store in URL Params (safe info)
+    profile_img = profile_img['url'] if profile_img else None
+    email = response.get('email')  # Store in URL Params (safe info)
+
+    # If user exists, redirect to login page with user details
     try:
         user = User.objects.get(spotify_id=spotify_id)
         if user:
+            username = user.username  # Store in URL Params (safe info)
+            params = {
+                'username': username,
+                'display_name': display_name,
+                'spotify_profile_url': spotify_profile_url,
+                'profile_img': profile_img
+            }
             return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/profile")
+    # Else, direct users to the registration page (INCLUDE PRIVACY POLICY!)
     except User.DoesNotExist:
         pass
 
@@ -121,75 +149,12 @@ def auth_callback(request):
         'spotify_profile_url': spotify_profile_url,
         'profile_img': profile_img
     })
-
-    # Build redirect params
-    params = {
-        'display_name': display_name or "",
-        'spotify_profile_url': spotify_profile_url or "",
-        'email': email or ""
-    }
+    params = dict()
+    # Create URL params and redirect to account creation
+    params['display_name'] = display_name
+    params['spotify_profile_url'] = spotify_profile_url
+    params['email'] = email
     if profile_img:
         params['profile_img'] = profile_img
 
     return HttpResponseRedirect(f"{settings.FRONT_END_ORIGIN}/account?{urlencode(params)}")
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def top_artists(request):
-    access_token = get_valid_token(request.session)
-    if not access_token:
-        return Response({'error': 'Unable to retrieve a valid token'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    sp = Spotify(auth=access_token)
-    try:
-        top_artists = sp.current_user_top_artists(limit=5)
-    except Exception as e:
-        print_error(f"Error retrieving top artists: {str(e)}")
-        return Response({'error': 'Failed to retrieve top artists'}, status=status.HTTP_400_BAD_REQUEST)
-
-    artists = [artist.get("name") for artist in top_artists.get("items", [])]
-    return Response(artists, status=status.HTTP_200_OK)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def top_genres(request):
-    access_token = get_valid_token(request.session)
-    if not access_token:
-        return Response({'error': 'Unable to retrieve a valid token'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    sp = Spotify(auth=access_token)
-    try:
-        top_artists = sp.current_user_top_artists(limit=50)
-    except Exception as e:
-        print(f"Error retrieving top artists: {str(e)}")
-        return Response({'error': 'Failed to retrieve top artists'}, status=status.HTTP_400_BAD_REQUEST)
-
-    genres = []
-    for artist in top_artists.get("items", []):
-        genres.extend(artist.get("genres", []))
-
-    genre_counts = Counter(genres)
-    top_genres = [genre.capitalize() for genre, count in genre_counts.most_common(5)]
-
-    return Response(top_genres, status=status.HTTP_200_OK)
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def top_songs(request):
-    access_token = get_valid_token(request.session)
-    if not access_token:
-        return Response({'error': 'Unable to retrieve a valid token'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    sp = Spotify(auth=access_token)
-    try:
-        top_tracks = sp.current_user_top_tracks(limit=5)
-    except Exception as e:
-        print(f"Error retrieving top tracks: {str(e)}")
-        return Response({'error': 'Failed to retrieve top tracks'}, status=status.HTTP_400_BAD_REQUEST)
-
-    songs = [
-        {"title": track.get("name"), "artist": ", ".join(artist["name"] for artist in track.get("artists", []))}
-        for track in top_tracks.get("items", [])
-    ]
-
-    return Response(songs, status=status.HTTP_200_OK)

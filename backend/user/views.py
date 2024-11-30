@@ -38,11 +38,13 @@ class RegisterView(generics.CreateAPIView):
 
         # Customize headers
         headers = self.get_success_headers(serializer.data)
+
         return Response(
             {'message': 'User registered successfully!'},
             status=status.HTTP_201_CREATED,
             headers=headers
         )
+
 
 
 # User login API

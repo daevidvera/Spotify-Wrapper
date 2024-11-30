@@ -14,42 +14,58 @@ const UserContext = createContext()
 // So, make sure the page is a protected route in App.jsx
 // NOTE: Values stored in front end can be maliciously changed. Do NOT use these values as authentication!
 // Only use values handled in the back end with session storage etc.
-function UserProvider({children}) {
+function UserProvider({ children }) {
+    const [user, setUser] = useState(null); // Start with `null` for proper loading state
+    const [userDataLoading, setUserDataLoading] = useState(true);
 
-    const [user, setUser] = useState({'profile_img': defaultPfp})
-    const [userDataLoading, setUserDataLoading] = useState(true)
+    const setUserData = (data) => {
+        setUser({
+            ...data,
+            profile_img: data?.profile_img || defaultPfp,
+        });
+    };
 
-    const setUserData = data => setUser({...data, 'profile_img': data['profile_img'] || defaultPfp})
-
-    const refreshUserData = () => {
-        setUserDataLoading(true)
-        return axios.get('/api/user/profile/', {
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            withCredentials: true
-        })
-        .then(res => setUserData(res.data))
-        .catch(ex => {
-            console.error(ex.response?.data || ex.message)
-            window.alert('An error has occurred in retrieving user data. Check console for more information.')
-        })
-        .finally(res => setUserDataLoading(false))
-    }
+    const refreshUserData = async () => {
+        setUserDataLoading(true);
+        try {
+            const res = await axios.get('/api/user/profile/', {
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                withCredentials: true,
+            });
+            setUserData(res.data);
+        } catch (error) {
+            console.error(error.response?.data || error.message);
+            window.alert('Failed to retrieve user data. Check console for details.');
+        } finally {
+            setUserDataLoading(false);
+        }
+    };
 
     useEffect(() => {
-        refreshUserData()
-    }, [])
+        refreshUserData(); // Fetch user data when component mounts
+    }, []);
 
-    return <UserContext.Provider
-        value={{
-            user, refreshUserData, userDataLoading
-        }}
-    >
-        {children}
-    </UserContext.Provider>
+    return (
+        <UserContext.Provider
+            value={{
+                user,
+                refreshUserData,
+                userDataLoading,
+            }}
+        >
+            {userDataLoading ? (
+                // Optionally show a loading spinner or fallback UI while data loads
+                <Stack spacing={2} sx={{ width: '100%', marginTop: 4 }}>
+                    <LinearProgress />
+                </Stack>
+            ) : (
+                children
+            )}
+        </UserContext.Provider>
+    );
 }
-
 
 
 export {UserContext, UserProvider}

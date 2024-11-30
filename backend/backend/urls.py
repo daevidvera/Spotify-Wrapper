@@ -24,5 +24,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("authentication.urls")), # Authorization API
     path("api/user/", include("user.urls")), # User API
+    path("api/wrap/", include("wrap.urls")), # Spotify API
     path("", TemplateView.as_view(template_name="index.html")) # Only serve index; let React Router do the rest
 ]

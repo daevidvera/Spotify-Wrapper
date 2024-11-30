@@ -1,10 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import { Fab, Box, Button, Typography, List, ListItem, ListItemText, Grid, useTheme, useMediaQuery } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from "../contexts/UserProvider.jsx";
 
 const Wrapper = () => {
     const theme = useTheme();
@@ -16,20 +17,33 @@ const Wrapper = () => {
     const [songs, setSongs] = useState([]);
     const [artists, setArtists] = useState([]);
     const [loading, setLoading] = useState(true);
+    const user = useContext(UserContext);
 
     // Fetch data from APIs
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true); // Indicate that data fetching is in progress
             try {
-                const [genresRes, songsRes, artistsRes] = await Promise.all([
-                    axios.get('/api/auth/top-genres'),
-                    axios.get('/api/auth/top-songs'),
-                    axios.get('/api/auth/top-artists'),
+                // Make parallel API requests for top songs, artists, and genres
+                const [songsRes, artistsRes, genresRes] = await Promise.all([
+                    axios.get('api/wrap/top-songs', {
+                        withCredentials: true,
+                        params: { spotify_id: user.user.spotify_id },
+                    }),
+                    axios.get('api/wrap/top-artists', {
+                        withCredentials: true,
+                        params: { spotify_id: user.user.spotify_id },
+                    }),
+                    axios.get('api/wrap/top-genres', {
+                        withCredentials: true,
+                        params: { spotify_id: user.user.spotify_id },
+                    }),
                 ]);
 
-                setGenres(genresRes.data || []);
+                // Update state with the fetched data
                 setSongs(songsRes.data || []);
                 setArtists(artistsRes.data || []);
+                setGenres(genresRes.data || []);
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -38,19 +52,46 @@ const Wrapper = () => {
         };
 
         fetchData();
-    }, []);
+    }, [user.user.spotify_id]);
 
+    // Scroll to the specified section
+    // Scroll to the specified section
     const scrollToSection = (direction) => {
         if (!wrapperRef.current) return;
 
-        const nextSection = currentSection + (direction === 'down' ? 1 : -1);
+        const nextSection = Math.max(0, Math.min(currentSection + (direction === 'down' ? 1 : -1), 3));
 
-        if (nextSection >= 0 && nextSection < 4) {
-            const section = wrapperRef.current.children[nextSection];
+        const sections = wrapperRef.current.querySelectorAll('div');
+        const section = sections[nextSection];
+
+        if (section) {
             section.scrollIntoView({ behavior: 'smooth' });
             setCurrentSection(nextSection);
         }
     };
+
+
+    // Handle IntersectionObserver to track visible section
+    useEffect(() => {
+        const sections = wrapperRef.current?.children;
+        if (!sections) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const visibleIndex = Array.from(sections).indexOf(entry.target);
+                        setCurrentSection(visibleIndex); // Sync `currentSection` with the visible section
+                    }
+                });
+            },
+            { root: wrapperRef.current, threshold: 0.5 } // Trigger when 50% of a section is visible
+        );
+
+        Array.from(sections).forEach((section) => observer.observe(section));
+
+        return () => observer.disconnect(); // Cleanup observer on unmount
+    }, []);
 
     const saveWrapper = () => {
         const wrapperData = { genres, songs, artists };
@@ -141,7 +182,7 @@ const Wrapper = () => {
                 </List>
             </Box>
 
-            {/* Top Artists */}
+            {/*Top Artists */}
             <Box
                 sx={{
                     height: '100vh',
@@ -199,7 +240,7 @@ const Wrapper = () => {
                 </List>
             </Box>
 
-            {/* Summary */}
+            {/*Summary*/}
             <Box
                 sx={{
                     height: '100vh',
@@ -247,7 +288,6 @@ const Wrapper = () => {
                                         primary={`${index + 1}. ${song.title}`}
                                         secondary={`Artist: ${song.artist}`}
                                         primaryTypographyProps={{ sx: { fontSize: '1rem' } }}
-                                        secondaryTypographyProps={{ sx: { fontSize: '0.875rem' } }}
                                     />
                                 </ListItem>
                             ))}
@@ -257,70 +297,45 @@ const Wrapper = () => {
             </Box>
 
             {/* Navigation Buttons */}
-            {currentSection > 0 && (
-                <Fab
-                    sx={{
-                        position: 'fixed',
-                        bottom: '100px',
-                        right: '20px',
-                        backgroundColor: theme.palette.primary.main,
-                        color: theme.palette.primary.contrastText,
-                        width: '56px',
-                        height: '56px',
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                        '&:hover': {
-                            backgroundColor: theme.palette.primary.dark,
-                        },
-                    }}
-                    onClick={() => scrollToSection('up')}
-                >
-                    <ArrowUpwardIcon />
-                </Fab>
-            )}
-
-            {currentSection < 3 && (
-                <Fab
-                    sx={{
-                        position: 'fixed',
-                        bottom: '30px',
-                        right: '20px',
-                        backgroundColor: theme.palette.primary.main,
-                        color: theme.palette.primary.contrastText,
-                        width: '56px',
-                        height: '56px',
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                        '&:hover': {
-                            backgroundColor: theme.palette.primary.dark,
-                        },
-                    }}
-                    onClick={() => scrollToSection('down')}
-                >
-                    <ArrowDownwardIcon />
-                </Fab>
-            )}
-
-            {/* Save Wrapper Button */}
-            <Box
+            <Fab
                 sx={{
                     position: 'fixed',
-                    bottom: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
+                    bottom: '100px',
+                    right: '20px',
+                    backgroundColor: currentSection > 0 ? theme.palette.primary.main : theme.palette.grey[400],
+                    color: theme.palette.primary.contrastText,
+                    width: '56px',
+                    height: '56px',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                    '&:hover': {
+                        backgroundColor: currentSection > 0 ? theme.palette.primary.dark : theme.palette.grey[400],
+                    },
                 }}
+                onClick={() => scrollToSection('up')}
+                disabled={currentSection === 0}
             >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={saveWrapper}
-                    sx={{
-                        padding: '10px 20px',
-                        fontSize: '1rem',
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                    }}
-                >
-                    Save Wrapped
-                </Button>
-            </Box>
+                <ArrowUpwardIcon />
+            </Fab>
+
+            <Fab
+                sx={{
+                    position: 'fixed',
+                    bottom: '30px',
+                    right: '20px',
+                    backgroundColor: currentSection < 3 ? theme.palette.primary.main : theme.palette.grey[400],
+                    color: theme.palette.primary.contrastText,
+                    width: '56px',
+                    height: '56px',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                    '&:hover': {
+                        backgroundColor: currentSection < 3 ? theme.palette.primary.dark : theme.palette.grey[400],
+                    },
+                }}
+                onClick={() => scrollToSection('down')}
+                disabled={currentSection === 3}
+            >
+                <ArrowDownwardIcon />
+            </Fab>
         </Box>
     );
 };
