@@ -8,12 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
 import {getCookie} from "../csrf/csrf.jsx";
-<<<<<<< Updated upstream
 import { UserContext } from "../contexts/UserProvider.jsx";
-
-=======
 import { useTranslation } from 'react-i18next'; // Import translation hook
->>>>>>> Stashed changes
 
 const Wrapper = () => {
     const theme = useTheme();
@@ -372,11 +368,7 @@ const Wrapper = () => {
             >
                 Save Wrapper
             </Button>
-
-
-<<<<<<< Updated upstream
-                <ArrowUpwardIcon />
-
+            <ArrowUpwardIcon />
             <Fab
                 sx={{
                     position: 'fixed',
@@ -396,7 +388,6 @@ const Wrapper = () => {
             >
                 <ArrowDownwardIcon />
             </Fab>
-=======
                 <Button
                     variant="contained"
                     color="primary"
@@ -409,8 +400,6 @@ const Wrapper = () => {
                 >
                     {t('saveWrapper')} {/* Translated Save Button */}
                 </Button>
-            </Box>
->>>>>>> Stashed changes
         </Box>
     );
 };

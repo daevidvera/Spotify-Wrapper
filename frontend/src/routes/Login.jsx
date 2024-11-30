@@ -6,26 +6,18 @@ import {useNavigate} from 'react-router-dom';
 import Fade from '@mui/material/Fade';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-<<<<<<< Updated upstream
+import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 // Login page
 
 // Computer compatible: ✅
 // Mobile compatible: ✅
 
-
-
-function Login() {
-    const [showLogo, setShowLogo] = useState(false);
-=======
-import { useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-
 function Login() {
     const [showLogo, setShowLogo] = useState(false);
     const theme = useTheme(); // Access the current theme
     const { t } = useTranslation(); // Hook to access translations
->>>>>>> Stashed changes
 
     useEffect(() => {setShowLogo(true)}, [])
 
