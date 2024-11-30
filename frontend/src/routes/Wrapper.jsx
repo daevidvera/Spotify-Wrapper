@@ -30,6 +30,7 @@ const Wrapper = () => {
   const [genres, setGenres] = useState([]);
   const [songs, setSongs] = useState([]);
   const [artists, setArtists] = useState([]);
+  const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
   const user = useContext(UserContext);
 
@@ -37,23 +38,29 @@ const Wrapper = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [songsRes, artistsRes, genresRes] = await Promise.all([
-          axios.get("api/wrap/top-songs", {
-            withCredentials: true,
-            params: { spotify_id: user.user.spotify_id },
-          }),
-          axios.get("api/wrap/top-artists", {
-            withCredentials: true,
-            params: { spotify_id: user.user.spotify_id },
-          }),
-          axios.get("api/wrap/top-genres", {
-            withCredentials: true,
-            params: { spotify_id: user.user.spotify_id },
-          }),
+        const [songsRes, artistsRes, genresRes, summaryRes] = await Promise.all([
+            axios.get("api/wrap/top-songs", {
+                withCredentials: true,
+                params: { spotify_id: user.user.spotify_id },
+            }),
+            axios.get("api/wrap/top-artists", {
+                withCredentials: true,
+                params: { spotify_id: user.user.spotify_id },
+            }),
+            axios.get("api/wrap/top-genres", {
+                withCredentials: true,
+                params: { spotify_id: user.user.spotify_id },
+            }),
+            axios.get("api/wrap/summary", {
+                withCredentials: true,
+                params: { spotify_id: user.user.spotify_id },
+            })
+
         ]);
         setSongs(songsRes.data || []);
         setArtists(artistsRes.data || []);
         setGenres(genresRes.data || []);
+        setSummary(summaryRes.data || "");
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -92,8 +99,32 @@ const Wrapper = () => {
   };
 
   const shareWrap = () => {
-    alert("Share functionality to be implemented!");
-  };
+      const formattedText = `
+My 2024 Wrapped!      
+
+Top Genres:
+${genres.map((genre, index) => `${index + 1}. ${genre}`).join("\n")}
+
+Top Artists:
+${artists.map((artist, index) => `${index + 1}. ${artist}`).join("\n")}
+
+Top Songs:
+${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).join("\n")}
+
+Summary:
+${summary}
+`;
+
+      navigator.clipboard.writeText(formattedText.trim())
+        .then(() => {
+          alert("Summary copied to clipboard!");
+        })
+        .catch((err) => {
+          console.error("Failed to copy text: ", err);
+          alert("Failed to copy summary.");
+        });
+    };
+
 
   if (loading) {
     return (
@@ -225,40 +256,34 @@ const Wrapper = () => {
       ))}
 
       {/* Summary */}
-      <Box
-        className="section"
-        sx={{
-          height: "auto",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 4,
-          padding: 4,
-        }}
-      >
-        <Typography
-          variant="h3"
+        <Box
+          className="section"
           sx={{
-            fontWeight: "bold",
-            textAlign: "center",
-            width: "100%",
-            marginBottom: isMobile ? 4 : 0,
+            height: "auto",
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+            padding: 4,
           }}
         >
-          {t("summary")}
-        </Typography>
-        {[
-          { title: t("topGenres"), data: genres },
-          { title: t("topArtists"), data: artists },
-          { title: t("topSongs"), data: songs.slice(0, 5) },
-        ].map((summary, idx) => (
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              width: "100%",
+              marginBottom: isMobile ? 4 : 0,
+            }}
+          >
+            {t("summary")}
+          </Typography>
           <Paper
-            key={idx}
             elevation={3}
             sx={{
               flex: 1,
-              maxWidth: isMobile ? "100%" : "300px",
+              maxWidth: isMobile ? "100%" : "600px", // Adjust width for a single text box
               p: 4,
               "&:hover": {
                 boxShadow: `0 8px 16px ${theme.palette.primary.main}`,
@@ -266,35 +291,13 @@ const Wrapper = () => {
             }}
           >
             <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-              {summary.title}
+              {t("Summary")}
             </Typography>
-            <List>
-              {summary.data.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: theme.palette.action.hover,
-                      borderRadius: "8px",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary={`${index + 1}. ${idx === 2 ? item.title : item}`}
-                    secondary={
-                      idx === 2 ? `${t("artist")}: ${item.artist}` : null
-                    }
-                    primaryTypographyProps={{
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <Typography variant="body1" sx={{ textAlign: "justify" }}>
+              {summary || t("loadingSummary")}
+            </Typography>
           </Paper>
-        ))}
-      </Box>
+        </Box>
 
       {/* Save and Share Buttons */}
       <Box

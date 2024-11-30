@@ -8,6 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
+
+import user
 from backend.utils import print_error
 from .models import User, SavedWrap
 from .serializers import UserRegisterSerializer, UserSerializer
@@ -86,6 +88,7 @@ class DeleteView(APIView):
         user = request.user
         user_str = str(user)
         user.delete()
+        user.saved_wraps.all().delete()
         return Response({'message': f"User {user_str} deleted successfully"})
     
 
@@ -116,7 +119,7 @@ def save_wrapper(request):
     Saves a user's wrapper data as a PDF.
     """
     # Ensure the request contains the necessary data
-    print(request)
+    print("HELLO: ", request)
     wrapper_data = request.data.get('wrapper_data')
     if not wrapper_data:
         return Response({'error': 'wrapper_data is required'}, status=status.HTTP_400_BAD_REQUEST)
