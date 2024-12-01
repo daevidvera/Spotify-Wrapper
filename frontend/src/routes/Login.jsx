@@ -28,6 +28,7 @@ function Login() {
             const res = await axios.get('/api/auth/url', { withCredentials: true });
             if (res.data && res.data.auth_url) {
                 window.location = res.data.auth_url;
+                console.log(window.location);
             } else {
                 throw new Error(t('noAuthUrlError'));
             }
