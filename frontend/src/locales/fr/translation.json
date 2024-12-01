@@ -46,5 +46,22 @@
     "save": "Enregistrer",
     "share": "Partager",
     "selectHolidayWrapper": "leHolidayWrapper",
-    "apply":  "Appliquer"
+    "apply":  "Appliquer", 
+  "deleteWrap": "Supprimer le Wrap",
+  "deleteWrapPrompt": "Êtes-vous sûr de vouloir supprimer ce wrap ? Cette action est irréversible.",
+  "noWraps": "Aucun wrap enregistré.",
+  "Describing You": "Vous Décrire",
+  "noSummaryAvailable": "Aucun résumé disponible.",
+  "failedToLoadDescription": "Échec du chargement de la description.",
+  "Open Wrap": "Ouvrir le Wrap",
+  "Delete Wrap": "Supprimer le Wrap",
+  "holidaySelected": "Thème sélectionné : {{holiday}}", 
+  "meetTheTeam": "Rencontrez l'Équipe !",
+  "contactDevelopers": "Contacter les Développeurs",
+  "selectDeveloperEmail": "Sélectionnez l'e-mail d'un développeur",
+  "typeFeedback": "Écrivez vos commentaires ici...",
+  "submitFeedback": "Envoyer",
+  "backendDeveloper": "Développeur Backend",
+  "frontendDeveloper": "Développeur Frontend",
+  "feedbackSubmitted": "Commentaires envoyés : {{feedback}}"
   }

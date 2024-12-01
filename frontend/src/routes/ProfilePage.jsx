@@ -301,79 +301,81 @@ const ProfilePage = () => {
                     {t('deleteAccount')}
                   </Button>
                 </Stack>
-                     <Box
+                              <Box
+                sx={{
+                  width: '100%',
+                  maxWidth: { xs: '100%', md: '600px' }, // Ensure the same width as "Describing You"
+                  mt: { xs: 4, md: 4 }, // Match top margin
+                  ml: { md: 4 },
+                  padding: 4,
+                  backgroundColor: theme.palette.background.paper,
+                  borderRadius: 2,
+                  textAlign: 'center',
+                  boxShadow: theme.shadows[2],
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: theme.palette.text.primary,
+                    fontSize: { xs: '1rem', sm: '1.2rem', md: '1.4rem' },
+                    fontFamily: '"League Spartan", sans-serif',
+                    fontWeight: 500,
+                    letterSpacing: 0.1,
+                    marginBottom: 2,
+                  }}
+                >
+                  {t("myWraps")}
+                </Typography>
+                {savedWraps.length > 0 ? (
+                  savedWraps.map((wrap, index) => (
+                    <Card
+                      key={index}
                       sx={{
-                        width: '100%',
-                        maxWidth: { xs: '100%', md: '600px' },
-                        mt: { xs: 4, md: 0 },
-                        ml: { md: 4 },
-                        padding: 4,
-                        backgroundColor: theme.palette.background.paper,
-                        borderRadius: 2,
-                        textAlign: 'center',
-                        boxShadow: theme.shadows[2],
+                        marginBottom: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        padding: 2,
                       }}
                     >
-                      <Typography
-                        variant="h6"
+                      <CardContent>
+                        <Typography variant="body1">Wrap {wrap.id}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Date Created: {new Date(wrap.created_at).toLocaleString()}
+                        </Typography>
+                      </CardContent>
+                      <CardActions
                         sx={{
-                          color: theme.palette.text.primary,
-                          fontSize: { xs: '1rem', sm: '1.2rem', md: '1.4rem' },
-                          fontFamily: '"League Spartan", sans-serif',
-                          fontWeight: 500,
-                          letterSpacing: 0.1,
-                          marginBottom: 2,
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'space-between',
                         }}
                       >
-                        {t("myWraps")}
-                      </Typography>
-                      {savedWraps.length > 0 ? (
-                        savedWraps.map((wrap, index) => (
-                          <Card
-                            key={index}  // Using index as the key (assuming each wrap is unique)
-                            sx={{
-                              marginBottom: 2,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'flex-start',
-                              padding: 2,
-                            }}
-                          >
-                            <CardContent>
-                              <Typography variant="body1">Wrap {wrap.id}</Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                Date Created: {new Date(wrap.created_at).toLocaleString()}
-                              </Typography>
-                            </CardContent>
-                            <CardActions sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'space-between'
-                                }}>
-                              <Button
-                                size="small"
-                                href={wrap.pdf_file_url}  // Assuming wrap.pdf_file_url contains the link to the PDF
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {t("Open Wrap")}
-                              </Button>
-                                <Button
-                                size="small"
-                                color="error"
-                                onClick={() => toggleDeleteWrapPrompt(wrap.id)}
-                              >
-                                {t("Delete Wrap")}
-                              </Button>
-                            </CardActions>
-                          </Card>
-                        ))
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          {t("noWraps")}
-                        </Typography>
-                      )}
-                    </Box>
+                        <Button
+                          size="small"
+                          href={wrap.pdf_file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {t("Open Wrap")}
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => toggleDeleteWrapPrompt(wrap.id)}
+                        >
+                          {t("Delete Wrap")}
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    {t("noWraps")}
+                  </Typography>
+                )}
+              </Box>
 
                 {/* Describing You Section */}
                 {/* Describing You Section */}
