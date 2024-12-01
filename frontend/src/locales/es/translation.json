@@ -47,7 +47,7 @@
     "share": "Compartir",
   "deleteWrap": "Eliminar Wrap",
   "deleteWrapPrompt": "¿Estás seguro de que deseas eliminar este wrap? Esta acción no se puede deshacer.",
-  "selectHolidayWrapper": "Seleccionar Tema de Fiesta",
+  "selectHolidayWrapper": "tuHolidayWrap",
   "apply": "Aplicar",
   "noWraps": "No hay wraps guardados.",
   "Describing You": "Describiéndote",

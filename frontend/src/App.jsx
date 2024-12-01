@@ -55,6 +55,7 @@ function App() {
     { path: '/profile', Element: ProfilePage },
     { path: '/main', Element: MainPage },
     { path: '/wrapper', Element: Wrapper },
+    
   ];
 
   return (

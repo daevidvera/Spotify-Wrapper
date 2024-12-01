@@ -337,6 +337,7 @@ const ProfilePage = () => {
                         flexDirection: 'column',
                         alignItems: 'flex-start',
                         padding: 2,
+                        
                       }}
                     >
                       <CardContent>
