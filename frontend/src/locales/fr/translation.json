@@ -45,7 +45,7 @@
     "register": "S'inscrire",
     "save": "Enregistrer",
     "share": "Partager",
-    "selectHolidayWrapper": "festifWrap",
+    "selectHolidayWrapper": "Définir le thème de l’emballage des fêtes",
     "apply":  "Appliquer", 
   "deleteWrap": "Supprimer le Wrap",
   "deleteWrapPrompt": "Êtes-vous sûr de vouloir supprimer ce wrap ? Cette action est irréversible.",
