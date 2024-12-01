@@ -48,7 +48,7 @@ function SignIn() {
           withCredentials: true,
         }
       )
-      .then(() => navigate("/profile"))
+      .then(() => navigate("/main"))
       .catch((ex) => {
         const res = ex.response;
         if (res?.status === 400) {

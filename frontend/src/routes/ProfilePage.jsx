@@ -53,34 +53,7 @@ const ProfilePage = () => {
     setDeleteWrapPromptVisible(!deleteWrapPromptVisible);
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      await axios.delete("/api/user/delete/", {
-        headers: { "X-CSRFToken": getCookie("csrftoken") },
-        withCredentials: true,
-      });
-      navigate("/login");
-    } catch (error) {
-      console.error("Account deletion failed:", error);
-      alert(t("errorDeleteAccount"));
-    }
-    toggleDeleteAccountPrompt();
-  };
 
-  const handleDeleteWrap = async () => {
-    try {
-      await axios.delete("/api/user/delete-wrap/", {
-        params: { spotify_id: user.spotify_id, wrap_id: deleteWrapId },
-        headers: { "X-CSRFToken": getCookie("csrftoken") },
-        withCredentials: true,
-      });
-      setSavedWraps((prevWraps) => prevWraps.filter((wrap) => wrap.id !== deleteWrapId));
-      toggleDeleteWrapPrompt();
-    } catch (error) {
-      console.error("Error deleting wrap:", error);
-      alert(t("errorDeleteWrap"));
-    }
-  };
 
   useEffect(() => {
     const fetchSavedWraps = async () => {
