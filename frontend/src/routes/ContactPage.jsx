@@ -24,7 +24,6 @@ const ContactPage = () => {
 
     const handleEmailSelect = (event) => {
         setSelectedEmail(event.target.value);
-        window.open(`mailto:${event.target.value}`, '_blank');
     };
 
     const handleFeedbackChange = (event) => {
@@ -32,8 +31,16 @@ const ContactPage = () => {
     };
 
     const handleSubmitFeedback = () => {
-        alert(t("feedbackSubmitted", { feedback }));
-        setFeedback('');
+        if (selectedEmail && feedback) {
+            const subject = encodeURIComponent('Feedback on Your Profile');
+            const body = encodeURIComponent(feedback);
+            const mailtoLink = `mailto:${selectedEmail}?subject=${subject}&body=${body}`;
+            window.location.href = mailtoLink;
+            alert(t("feedbackSubmitted", { feedback }));
+            setFeedback('');
+        } else {
+            alert("Please select a developer and provide feedback.");
+        }
     };
 
     return (
