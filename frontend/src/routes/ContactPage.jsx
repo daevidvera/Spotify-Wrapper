@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Box, Button, MenuItem, Select, Stack, TextField, Typography, useTheme } from "@mui/material";
+import {
+    Box,
+    Button,
+    MenuItem,
+    Select,
+    Stack,
+    TextField,
+    Typography,
+    useTheme
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import NavBar from '../components/NavBar';
 import developerImage1 from '../assets/developer1.jpeg';
@@ -9,8 +18,8 @@ import developerImage4 from '../assets/developer4.jpeg';
 import developerImage5 from '../assets/developer5.jpeg';
 
 const ContactPage = () => {
-    const theme = useTheme(); // Access the current theme
-    const { t } = useTranslation(); // Access translations
+    const theme = useTheme();
+    const { t } = useTranslation();
     const [selectedEmail, setSelectedEmail] = useState('');
     const [feedback, setFeedback] = useState('');
 
@@ -22,13 +31,9 @@ const ContactPage = () => {
         { name: "@saketh.", role: t("backendDeveloper"), email: "saketh.budideti@gmail.com", linkedIn: "https://www.linkedin.com/in/sbudideti", img: developerImage5 }
     ];
 
-    const handleEmailSelect = (event) => {
-        setSelectedEmail(event.target.value);
-    };
+    const handleEmailSelect = (event) => setSelectedEmail(event.target.value);
 
-    const handleFeedbackChange = (event) => {
-        setFeedback(event.target.value);
-    };
+    const handleFeedbackChange = (event) => setFeedback(event.target.value);
 
     const handleSubmitFeedback = () => {
         if (selectedEmail && feedback) {
@@ -51,222 +56,198 @@ const ContactPage = () => {
                 minHeight: "100vh",
                 display: "flex",
                 flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: 4,
+                paddingBottom: 6
             }}
         >
             {/* Navbar */}
             <NavBar buttons={[t("home"), t("profile"), t("signOut")]} />
 
-            {/* Main content area */}
+            {/* Meet the Team Section */}
             <Box
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: { xs: 2, md: 4 },
-                    gap: { xs: 3, md: 5 }
+                    textAlign: "center",
+                    width: "100%",
+                    maxWidth: "1200px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: 3
                 }}
             >
-                {/* Meet the Team Section */}
-                <Box
+                <Typography
+                    variant="h4"
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        width: '100%',
-                        maxWidth: '1000px',
-                        textAlign: 'center',
-                        gap: 2,
+                        fontSize: { xs: "1.75rem", md: "2.5rem" },
+                        fontWeight: 800,
+                        marginBottom: 3,
+                        fontFamily: '"League Spartan", sans-serif',
                     }}
                 >
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-                            fontFamily: '"League Spartan", sans-serif',
-                            fontWeight: 800,
-                        }}
-                    >
-                        {t("meetTheTeam")}
-                    </Typography>
-                    <Stack
-                        direction="row"
-                        spacing={4}
-                        sx={{
-                            alignItems: "center",
-                            justifyContent: 'center',
-                            flexWrap: 'wrap',
-                            gap: { xs: 3, md: 5 },
-                        }}
-                    >
-                        {developerEmails.map(dev => (
+                    {t("meetTheTeam")}
+                </Typography>
+                <Stack
+                    direction={{ xs: "column", sm: "row" }} // Stack vertically on small screens
+                    spacing={4}
+                    sx={{
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                        gap: { xs: 3, md: 5 },
+                    }}
+                >
+                    {developerEmails.map(dev => (
+                        <Box
+                            key={dev.email}
+                            onClick={() => dev.linkedIn && window.open(dev.linkedIn, '_blank')}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                transition: 'transform 0.3s ease',
+                                '&:hover': {
+                                    transform: 'scale(1.1)',
+                                },
+                            }}
+                        >
                             <Box
-                                key={dev.email}
-                                onClick={() => dev.linkedIn && window.open(dev.linkedIn, '_blank')}
+                                component="img"
+                                src={dev.img}
+                                alt={dev.name}
                                 sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    flexDirection: 'column',
-                                    cursor: 'pointer',
-                                    transition: 'transform 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'scale(1.1)',
-                                    },
+                                    width: { xs: 80, md: 100 },
+                                    height: { xs: 80, md: 100 },
+                                    borderRadius: "50%",
+                                    marginBottom: 1,
+                                }}
+                            />
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: "1rem", md: "1.25rem" },
+                                    fontWeight: 700,
+                                    fontFamily: '"League Spartan", sans-serif',
                                 }}
                             >
-                                <Box
-                                    component="img"
-                                    src={dev.img}
-                                    alt={dev.name}
-                                    sx={{
-                                        width: { xs: 60, sm: 80, md: 100 },
-                                        height: { xs: 60, sm: 80, md: 100 },
-                                        borderRadius: '50%',
-                                        marginBottom: 1,
-                                    }}
-                                />
-                                <Typography
-                                    sx={{
-                                        fontSize: { xs: '0.875rem', sm: '1rem', md: '1.25rem' },
-                                        textAlign: 'center',
-                                        fontFamily: '"League Spartan", sans-serif',
-                                        fontWeight: 800,
-                                    }}
-                                >
-                                    {dev.name}
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-                                        fontWeight: 600,
-                                        color: theme.palette.text.secondary,
-                                    }}
-                                >
-                                    {dev.role}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Stack>
-                </Box>
+                                {dev.name}
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: "0.875rem", md: "1rem" },
+                                    fontWeight: 500,
+                                    color: theme.palette.text.secondary,
+                                }}
+                            >
+                                {dev.role}
+                            </Typography>
+                        </Box>
+                    ))}
+                </Stack>
+            </Box>
 
-                {/* Feedback Section */}
-                <Box
+            {/* Feedback Section */}
+            <Box
+                sx={{
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    padding: { xs: 4, md: 6 },
+                    borderRadius: 3,
+                    width: "100%",
+                    maxWidth: "500px",
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
+                    boxShadow: 3,
+                }}
+            >
+                <Typography
+                    variant="h5"
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        width: '100%',
-                        maxWidth: '600px',
-                        backgroundColor: theme.palette.primary.main,
-                        padding: { xs: 3, md: 5 },
-                        borderRadius: 8,
-                        textAlign: 'center',
-                        transition: 'transform 0.3s ease',
+                        fontWeight: 700,
+                        fontFamily: '"League Spartan", sans-serif',
+                        fontSize: { xs: "1.5rem", md: "2rem" },
+                    }}
+                >
+                    {t("contactDevelopers")}
+                </Typography>
+                <Select
+                    value={selectedEmail}
+                    onChange={handleEmailSelect}
+                    displayEmpty
+                    sx={{
+                        width: "100%",
+                        maxWidth: "300px",
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: theme.palette.primary.contrastText,
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: theme.palette.primary.contrastText,
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: theme.palette.primary.contrastText,
+                        },
+                        '& .MuiSelect-select': {
+                            color: theme.palette.primary.contrastText,
+                        },
+                        '& .MuiInputBase-input': {
+                            color: theme.palette.primary.contrastText,
+                        },
+                        '& .MuiSelect-icon': {
+                            color: theme.palette.primary.contrastText,
+                        },
+                    }}
+                    renderValue={(selected) => selected || t("selectDeveloperEmail")}
+                >
+                    {developerEmails.map(dev => (
+                        <MenuItem key={dev.email} value={dev.email}>
+                            {dev.name} - {dev.email}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <TextField
+                    placeholder={t("typeFeedback")}
+                    value={feedback}
+                    onChange={handleFeedbackChange}
+                    multiline
+                    rows={4}
+                    sx={{
+                        width: "100%",
+                        maxWidth: "300px",
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: theme.palette.primary.contrastText,
+                            },
+                            '&:hover fieldset': {
+                                borderColor: theme.palette.primary.contrastText,
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: theme.palette.primary.contrastText,
+                            },
+                        },
+                        '& .MuiInputBase-input': {
+                            color: theme.palette.primary.contrastText,
+                        },
+                    }}
+                />
+                <Button
+                    onClick={handleSubmitFeedback}
+                    sx={{
+                        backgroundColor: theme.palette.primary.contrastText,
+                        color: theme.palette.primary.main,
+                        fontWeight: 700,
+                        fontFamily: '"League Spartan", sans-serif',
+                        padding: "10px 20px",
+                        borderRadius: "50px",
                         '&:hover': {
-                            transform: 'scale(1.05)',
+                            opacity: 0.9,
                         },
                     }}
                 >
-                    <Typography
-                        variant="h4"
-                        sx={{
-                            color: theme.palette.primary.contrastText,
-                            marginBottom: 3,
-                            fontFamily: '"League Spartan", sans-serif',
-                            fontWeight: 800,
-                            fontSize: { xs: '1.5rem', md: '2rem' },
-                        }}
-                    >
-                        {t("contactDevelopers")}
-                    </Typography>
-
-                    {/* Dropdown for developer emails */}
-                    <Select
-                        value={selectedEmail}
-                        onChange={handleEmailSelect}
-                        displayEmpty
-                        sx={{
-                            width: '100%',
-                            maxWidth: '300px',
-                            textAlign: 'left',
-                            marginBottom: 3,
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: theme.palette.primary.contrastText,
-                            },
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                borderColor: theme.palette.primary.contrastText,
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: theme.palette.primary.contrastText,
-                            },
-                            '& .MuiSelect-select': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                            '& .MuiInputBase-input': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                            '& .MuiSelect-icon': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                        }}
-                        renderValue={(selected) =>
-                            selected ? selected : t("selectDeveloperEmail")
-                        }
-                    >
-                        {developerEmails.map((dev) => (
-                            <MenuItem key={dev.email} value={dev.email}>
-                                {dev.name} - {dev.email}
-                            </MenuItem>
-                        ))}
-                    </Select>
-
-                    {/* Feedback text box */}
-                    <TextField
-                        placeholder={t("typeFeedback")}
-                        value={feedback}
-                        onChange={handleFeedbackChange}
-                        multiline
-                        rows={4}
-                        sx={{
-                            width: '100%',
-                            maxWidth: '300px',
-                            marginBottom: 3,
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: theme.palette.primary.contrastText,
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: theme.palette.primary.contrastText,
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: theme.palette.primary.contrastText,
-                                },
-                            },
-                            '& .MuiInputBase-input': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                        }}
-                    />
-
-                    {/* Submit button */}
-                    <Button
-                        onClick={handleSubmitFeedback}
-                        sx={{
-                            color: theme.palette.primary.main,
-                            backgroundColor: theme.palette.primary.contrastText,
-                            width: '100%',
-                            maxWidth: '300px',
-                            borderRadius: "99px",
-                            fontFamily: '"League Spartan", sans-serif',
-                            fontWeight: 800,
-                            '&:hover': {
-                                backgroundColor: theme.palette.primary.contrastText,
-                                opacity: 0.9,
-                            },
-                        }}
-                    >
-                        {t("submitFeedback")}
-                    </Button>
-                </Box>
+                    {t("submitFeedback")}
+                </Button>
             </Box>
         </Box>
     );
