@@ -45,7 +45,7 @@
     "register": "S'inscrire",
     "save": "Enregistrer",
     "share": "Partager",
-    "selectHolidayWrapper": "leHolidayWrapper",
+    "selectHolidayWrapper": "festifWrap",
     "apply":  "Appliquer", 
   "deleteWrap": "Supprimer le Wrap",
   "deleteWrapPrompt": "Êtes-vous sûr de vouloir supprimer ce wrap ? Cette action est irréversible.",
@@ -63,5 +63,19 @@
   "submitFeedback": "Envoyer",
   "backendDeveloper": "Développeur Backend",
   "frontendDeveloper": "Développeur Frontend",
-  "feedbackSubmitted": "Commentaires envoyés : {{feedback}}"
+  "feedbackSubmitted": "Commentaires envoyés : {{feedback}}",
+  "timeRange": {
+    "short_term": "Court Terme",
+    "medium_term": "Moyen Terme",
+    "long_term": "Long Terme"
+  }, 
+   "dateCreated": "Date Créée : {{date}}", 
+  "wrapTitle": "LeWrap",
+  "openWrap": "Ouvrir le Wrap",
+  "describingYou": "Décrivez-vous",
+  "errorDeleteAccount": "Impossible de supprimer le compte. Veuillez réessayer plus tard.",
+  "errorDeleteWrap": "Impossible de supprimer le Wrap. Veuillez réessayer plus tard.",
+  "errorFetchingSummary": "Impossible de charger la description. Veuillez réessayer plus tard.",
+  "noSummary": "Aucun résumé disponible."
+  
   }

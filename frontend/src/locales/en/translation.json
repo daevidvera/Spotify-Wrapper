@@ -47,7 +47,7 @@
   "register": "Register",
   "save": "save",
   "share": "share",
-   "selectHolidayWrapper": "yourHolidayWrapper",
+   "selectHolidayWrapper": "holidayWrapper",
     "apply": "Apply", 
   "meetTheTeam": "Meet The Team!",
   "contactDevelopers": "Contact the Developers",
@@ -56,5 +56,23 @@
   "submitFeedback": "Submit Feedback",
   "backendDeveloper": "Backend Developer",
   "frontendDeveloper": "Frontend Developer",
-  "feedbackSubmitted": "Feedback submitted: {{feedback}}"
+  "feedbackSubmitted": "Feedback submitted: {{feedback}}", 
+  "timeRange": {
+    "short_term": "Short Term",
+    "medium_term": "Medium Term",
+    "long_term": "Long Term"
+  },
+  "dateCreated": "Date Created: {{date}}",
+    "openWrap": "Open Wrap",
+    "deleteWrap": "Delete Wrap",
+    "noWraps": "No wraps available.",
+    "describingYou": "Describing You",
+    "errorDeleteAccount": "Failed to delete account. Please try again later.",
+    "errorDeleteWrap": "Failed to delete wrap. Please try again later.",
+    "errorFetchingSummary": "Failed to load description. Please try again later.",
+    "noSummary": "No summary available.",
+    "holidaySelected": "Holiday selected: {holiday}",
+    "wrapTitle": "YourWrap"
+  
+
 }

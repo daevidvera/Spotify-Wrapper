@@ -47,7 +47,7 @@
     "share": "Compartir",
   "deleteWrap": "Eliminar Wrap",
   "deleteWrapPrompt": "¿Estás seguro de que deseas eliminar este wrap? Esta acción no se puede deshacer.",
-  "selectHolidayWrapper": "tuHolidayWrap",
+  "selectHolidayWrapper": "festivoWrap",
   "apply": "Aplicar",
   "noWraps": "No hay wraps guardados.",
   "Describing You": "Describiéndote",
@@ -63,7 +63,21 @@
   "submitFeedback": "Enviar Opinión",
   "backendDeveloper": "Desarrollador Backend",
   "frontendDeveloper": "Desarrollador Frontend",
-  "feedbackSubmitted": "Opinión enviada: {{feedback}}"
+  "feedbackSubmitted": "Opinión enviada: {{feedback}}",
+  "timeRange": {
+    "short_term": "Corto Plazo",
+    "medium_term": "Mediano Plazo",
+    "long_term": "Largo Plazo"
+  }, 
+   "dateCreated": "Fecha Creada: {{date}}", 
+   "wrapTitle": "TuWrap",
+   "openWrap": "Abrir envoltura",
+   "describingYou": "Describiéndote",
+   "errorDeleteAccount": "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.",
+   "errorDeleteWrap": "No se pudo eliminar la envoltura. Inténtalo de nuevo más tarde.",
+   "errorFetchingSummary": "No se pudo cargar la descripción. Inténtalo de nuevo más tarde.",
+   "noSummary": "No hay resumen disponible."
+  
   
 
 }

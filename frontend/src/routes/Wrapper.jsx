@@ -40,12 +40,13 @@ const Wrapper = () => {
 
   const holidayThemes = {
     Default: {
-      backgroundColor: theme.palette.background.default,
-      textColor: isDarkMode ? "#d3d3d3" : "#4a4a4a", // Light grey for dark mode, darker grey for light mode
-      buttonColor: isDarkMode ? theme.palette.grey[800] : theme.palette.primary.main, // Subtle in dark, vibrant in light
-      listTextColor: theme.palette.text.primary,
-      hoverBackgroundColor: isDarkMode ? theme.palette.grey[700] : theme.palette.action.hover,
-      hoverTextColor: isDarkMode ? theme.palette.text.secondary : theme.palette.text.primary,
+
+      textColor: isDarkMode ? "#ffffff" : "#000000", 
+      buttonColor: isDarkMode ? "#000000" : "#ffffff", 
+      backgroundColor: isDarkMode ? "#000000" : "#ffffff", 
+      hoverBackgroundColor: isDarkMode ? "#ffffff" : "#000000", 
+      hoverTextColor: isDarkMode ? "#000000" : "#ffffff", 
+
     },
     Halloween: {
       backgroundColor: isDarkMode ? "#1f1f1f" : "#fbe8c6",
@@ -227,18 +228,19 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
           left: isMobile ? "12px" : "24px",
           zIndex: 999,
           backgroundColor: currentTheme.buttonColor,
-          color: theme.palette.common.white,
-          "&:hover": {
-            color: currentTheme.hoverTextColor,
-            backgroundColor: currentTheme.hoverBackgroundColor,
-          },
+        backgroundColor: isDarkMode ? "#000000" : "#ffffff", // Black in dark mode, white in light mode
+        color: isDarkMode ? "#ffffff" : "#000000", // White icon in dark mode, black icon in light mode
+        "&:hover": {
+          color: currentTheme.hoverTextColor,
+          backgroundColor: currentTheme.hoverBackgroundColor,
+        },
         }}
         onClick={goToProfile}
       >
         <ArrowBackIcon />
       </Fab>
 
-      {/* Scroll Down Button */}
+
      {/* Scroll Down Button */}
       {!isMobile && (
         <Fab
@@ -247,7 +249,8 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
             bottom: "24px",
             right: "24px",
             backgroundColor: currentTheme.buttonColor,
-            color: theme.palette.common.white,
+            backgroundColor: isDarkMode ? "#000000" : "#ffffff", // Black in dark mode, white in light mode
+            color: isDarkMode ? "#ffffff" : "#000000", // White icon in dark mode, black icon in light mode
             "&:hover": {
               color: currentTheme.hoverTextColor,
               backgroundColor: currentTheme.hoverBackgroundColor,
@@ -296,33 +299,35 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
             <List>
               {section.data.map((item, index) => (
                 <ListItem
-                  key={index}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: theme.palette.action.hover,
-                      color: currentTheme.hoverTextColor,
-                      borderRadius: "8px",
-                    },
+                      key={index}
+                      sx={{
+                        backgroundColor: "transparent", // Default background
+                        transition: "background-color 0.3s, color 0.3s", // Smooth transition for hover
+                        "&:hover": {
+                          backgroundColor: isDarkMode ? "#333333" : "#f0f0f0", // Slightly darker background in dark mode, lighter background in light mode
+                          color: isDarkMode ? "#ffffff" : "#000000", // High contrast text color
+                          borderRadius: "8px", // Rounded corners on hover
+                        },
+                      }}
+                    >
+                <ListItemText
+                  primary={`${index + 1}. ${
+                    idx === 2 ? item.title : item
+                  }`}
+                  secondary={
+                    idx === 2 ? `${t("artist")}: ${item.artist}` : null
+                  }
+                  primaryTypographyProps={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    color: currentTheme.textColor, // Default text color from theme
                   }}
-                >
-                  <ListItemText
-                    primary={`${index + 1}. ${
-                      idx === 2 ? item.title : item
-                    }`}
-                    secondary={
-                      idx === 2 ? `${t("artist")}: ${item.artist}` : null
-                    }
-                    primaryTypographyProps={{
-                      fontSize: "1.5rem",
-                      fontWeight: "bold",
-                      color: currentTheme.listTextColor,
-                    }}
-                    secondaryTypographyProps={{
-                      fontSize: "1.2rem",
-                      color: currentTheme.listTextColor,
-                    }}
-                  />
-                </ListItem>
+                  secondaryTypographyProps={{
+                    fontSize: "1.2rem",
+                    color: currentTheme.textColor, // Default secondary text color from theme
+                  }}
+                />
+              </ListItem>
               ))}
             </List>
           </Paper>
@@ -527,7 +532,7 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
       >
         {t("share")}
       </Button>
-      
+
        {/* Time Range Button */}
       <Button
         variant="contained"
@@ -552,7 +557,7 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
           setTimeRange(ranges[nextIndex]); 
         }}
       >
-        {t(` ${timeRange.replace("_", " ").toUpperCase()}`)}
+          {t(`timeRange.${timeRange}`)}
       </Button>
 
       
