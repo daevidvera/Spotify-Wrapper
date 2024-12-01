@@ -42,7 +42,11 @@
     "loginDescription": "¡Bienvenido de nuevo! Inicia sesión para acceder a tu cuenta o crea una nueva.",
     "email": "Correo electrónico",
     "confirmPassword": "Confirmar Contraseña",
-    "register": "Registrar"
+    "register": "Registrar",
+      "save": "Guardar",
+    "share": "Compartir",
+    "selectHolidayWrapper": "tuHolidayWrapper",
+    "apply": "Applicar"
   
 
 }

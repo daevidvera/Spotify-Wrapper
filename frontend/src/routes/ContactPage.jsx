@@ -13,11 +13,11 @@ const ContactPage = () => {
     const [feedback, setFeedback] = useState('');
 
     const developerEmails = [
-        { name: "@alberto.", role: "backend developer", email: "alberticoalvarez123@gmail.com", linkedIn: "https://www.linkedin.com/in/albertoalvarez0926", img: developerImage1 },
-        { name: "@boris.", role: "frontend developer", email: "boriskodappully@gmail.com", linkedIn: "https://www.linkedin.com/in/boris-kodappully-78687a164", img: developerImage2 },
-        { name: "@david.", role: "frontend developer", email: "carlosrescoto04@gmail.com", linkedIn: "https://www.linkedin.com/in/daevidvera", img: developerImage3 },
-        { name: "@devanshi.", role: "frontend developer", email: "sooddevanshi@gmail.com", img: developerImage4 },
-        { name: "@saketh.", role: "backend developer", email: "saketh.budideti@gmail.com", linkedIn: "https://www.linkedin.com/in/sbudideti", img: developerImage5 }
+        { name: "@alberto.", role: "Backend Developer", email: "alberticoalvarez123@gmail.com", linkedIn: "https://www.linkedin.com/in/albertoalvarez0926", img: developerImage1 },
+        { name: "@boris.", role: "Frontend Developer", email: "boriskodappully@gmail.com", linkedIn: "https://www.linkedin.com/in/boris-kodappully-78687a164", img: developerImage2 },
+        { name: "@david.", role: "Frontend Developer", email: "carlosrescoto04@gmail.com", linkedIn: "https://www.linkedin.com/in/daevidvera", img: developerImage3 },
+        { name: "@devanshi.", role: "Frontend Developer", email: "sooddevanshi@gmail.com", img: developerImage4 },
+        { name: "@saketh.", role: "Backend Developer", email: "saketh.budideti@gmail.com", linkedIn: "https://www.linkedin.com/in/sbudideti", img: developerImage5 }
     ];
 
     const handleEmailSelect = (event) => {
@@ -53,8 +53,8 @@ const ContactPage = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    padding: 4,
-                    gap: 4
+                    padding: { xs: 2, md: 4 },
+                    gap: { xs: 3, md: 5 }
                 }}
             >
                 {/* Meet the Team Section */}
@@ -65,12 +65,13 @@ const ContactPage = () => {
                         alignItems: 'center',
                         width: '100%',
                         maxWidth: '1000px',
+                        textAlign: 'center',
+                        gap: 2,
                     }}
                 >
                     <Typography
                         variant="h5"
                         sx={{
-                            marginBottom: 2,
                             fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
                             fontFamily: '"League Spartan", sans-serif',
                             fontWeight: 800,
@@ -78,15 +79,25 @@ const ContactPage = () => {
                     >
                         Meet The Team!
                     </Typography>
-                    <Stack direction="row" spacing={5} sx={{ alignItems: "center", justifyContent: 'center', flexWrap: 'wrap', gap: { xs: 5, md: 5 } }}>
+                    <Stack
+                        direction="row"
+                        spacing={4}
+                        sx={{
+                            alignItems: "center",
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            gap: { xs: 3, md: 5 },
+                        }}
+                    >
                         {developerEmails.map(dev => (
                             <Box
                                 key={dev.email}
-                                onClick={() => window.open(dev.linkedIn, '_blank')}
+                                onClick={() => dev.linkedIn && window.open(dev.linkedIn, '_blank')}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     flexDirection: 'column',
+                                    cursor: 'pointer',
                                     transition: 'transform 0.3s ease',
                                     '&:hover': {
                                         transform: 'scale(1.1)',
@@ -113,13 +124,15 @@ const ContactPage = () => {
                                     }}
                                 >
                                     {dev.name}
-                                    <Typography
-                                        sx={{
-                                            fontWeight: 700,
-                                        }}
-                                    >
-                                        {dev.role}
-                                    </Typography>
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+                                        fontWeight: 600,
+                                        color: theme.palette.text.secondary,
+                                    }}
+                                >
+                                    {dev.role}
                                 </Typography>
                             </Box>
                         ))}
@@ -135,8 +148,9 @@ const ContactPage = () => {
                         width: '100%',
                         maxWidth: '600px',
                         backgroundColor: theme.palette.primary.main,
-                        padding: 4,
+                        padding: { xs: 3, md: 5 },
                         borderRadius: 8,
+                        textAlign: 'center',
                         transition: 'transform 0.3s ease',
                         '&:hover': {
                             transform: 'scale(1.05)',
@@ -150,6 +164,7 @@ const ContactPage = () => {
                             marginBottom: 3,
                             fontFamily: '"League Spartan", sans-serif',
                             fontWeight: 800,
+                            fontSize: { xs: '1.5rem', md: '2rem' },
                         }}
                     >
                         Contact the Developers
@@ -197,7 +212,7 @@ const ContactPage = () => {
 
                     {/* Feedback text box */}
                     <TextField
-                        placeholder="Type here..."
+                        placeholder="Type your feedback here..."
                         value={feedback}
                         onChange={handleFeedbackChange}
                         multiline
@@ -205,7 +220,7 @@ const ContactPage = () => {
                         sx={{
                             width: '100%',
                             maxWidth: '300px',
-                            marginBottom: 2,
+                            marginBottom: 3,
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
                                     borderColor: theme.palette.primary.contrastText,
@@ -218,12 +233,6 @@ const ContactPage = () => {
                                 },
                             },
                             '& .MuiInputBase-input': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                            '& .MuiInputLabel-root': {
-                                color: theme.palette.primary.contrastText,
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
                                 color: theme.palette.primary.contrastText,
                             },
                         }}
@@ -240,6 +249,10 @@ const ContactPage = () => {
                             borderRadius: "99px",
                             fontFamily: '"League Spartan", sans-serif',
                             fontWeight: 800,
+                            '&:hover': {
+                                backgroundColor: theme.palette.primary.contrastText,
+                                opacity: 0.9,
+                            },
                         }}
                     >
                         Submit Feedback

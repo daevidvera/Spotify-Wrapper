@@ -43,7 +43,11 @@
   "loginDescription": "Welcome back! Sign in to access your account or create a new one.",
   "email": "Email",
   "confirmPassword": "Confirm Password",
-  "register": "Register"
+  "register": "Register",
+  "save": "save",
+  "share": "share",
+   "selectHolidayWrapper": "yourHolidayWrapper",
+    "apply": "Apply"
   
   
 }

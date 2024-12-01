@@ -42,5 +42,9 @@
     "loginDescription": "Bon retour ! Connectez-vous pour accéder à votre compte ou créez-en un nouveau.",
     "email": "E-mail",
     "confirmPassword": "Confirmer le mot de passe",
-    "register": "S'inscrire"
+    "register": "S'inscrire",
+    "save": "Enregistrer",
+    "share": "Partager",
+    "selectHolidayWrapper": "leHolidayWrapper",
+    "apply":  "Appliquer"
   }

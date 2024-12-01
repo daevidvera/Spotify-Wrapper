@@ -15,6 +15,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import ShareIcon from "@mui/icons-material/Share";
+import AcUnitIcon from "@mui/icons-material/AcUnit"; // Christmas Icon
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserProvider.jsx";
@@ -30,37 +31,61 @@ const Wrapper = () => {
   const [genres, setGenres] = useState([]);
   const [songs, setSongs] = useState([]);
   const [artists, setArtists] = useState([]);
-  const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
-  const user = useContext(UserContext);
+  const { user, holiday } = useContext(UserContext);
+
+  const isDarkMode = theme.palette.mode === "dark";
+
+  const holidayThemes = {
+    Default: {
+      backgroundColor: theme.palette.background.default,
+      textColor: isDarkMode ? "#d3d3d3" : "#4a4a4a", // Light grey for dark mode, darker grey for light mode
+      buttonColor: isDarkMode ? theme.palette.grey[800] : theme.palette.primary.main, // Subtle in dark, vibrant in light
+      listTextColor: theme.palette.text.primary,
+      hoverBackgroundColor: isDarkMode ? theme.palette.grey[700] : theme.palette.action.hover,
+      hoverTextColor: isDarkMode ? theme.palette.text.secondary : theme.palette.text.primary,
+    },
+    Halloween: {
+      backgroundColor: isDarkMode ? "#1f1f1f" : "#fbe8c6",
+      textColor: isDarkMode ? "#ffffff" : "#4a2f21",
+      buttonColor: isDarkMode ? "#d35400" : "#f39c12",
+      listTextColor: isDarkMode ? "#ffffff" : "#4a2f21",
+      hoverBackgroundColor: isDarkMode ? "#f39c12" : "#d35400",
+      hoverTextColor: isDarkMode ? "#1f1f1f" : "#ffffff",
+    },
+    Christmas: {
+      backgroundColor: isDarkMode ? "#2b3e50" : "#e7f7e7",
+      textColor: isDarkMode ? "#adebad" : "#2e523e",
+      buttonColor: isDarkMode ? "#ff4d4d" : "#ff6b6b",
+      listTextColor: isDarkMode ? "#ffffff" : "#2e523e",
+      hoverBackgroundColor: isDarkMode ? "#adebad" : "#ff4d4d",
+      hoverTextColor: isDarkMode ? "#2b3e50" : "#ffffff",
+    },
+  };
+
+  const currentTheme = holidayThemes[holiday] || holidayThemes.Default;
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [songsRes, artistsRes, genresRes, summaryRes] = await Promise.all([
-            axios.get("api/wrap/top-songs", {
-                withCredentials: true,
-                params: { spotify_id: user.user.spotify_id },
-            }),
-            axios.get("api/wrap/top-artists", {
-                withCredentials: true,
-                params: { spotify_id: user.user.spotify_id },
-            }),
-            axios.get("api/wrap/top-genres", {
-                withCredentials: true,
-                params: { spotify_id: user.user.spotify_id },
-            }),
-            axios.get("api/wrap/summary", {
-                withCredentials: true,
-                params: { spotify_id: user.user.spotify_id },
-            })
-
+        const [songsRes, artistsRes, genresRes] = await Promise.all([
+          axios.get("api/wrap/top-songs", {
+            withCredentials: true,
+            params: { spotify_id: user.spotify_id },
+          }),
+          axios.get("api/wrap/top-artists", {
+            withCredentials: true,
+            params: { spotify_id: user.spotify_id },
+          }),
+          axios.get("api/wrap/top-genres", {
+            withCredentials: true,
+            params: { spotify_id: user.spotify_id },
+          }),
         ]);
         setSongs(songsRes.data || []);
         setArtists(artistsRes.data || []);
         setGenres(genresRes.data || []);
-        setSummary(summaryRes.data || "");
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -69,7 +94,7 @@ const Wrapper = () => {
     };
 
     fetchData();
-  }, [user.user.spotify_id]);
+  }, [user.spotify_id]);
 
   const scrollToSection = (direction) => {
     if (!wrapperRef.current) return;
@@ -78,9 +103,9 @@ const Wrapper = () => {
     let nextSection = currentSection + (direction === "down" ? 1 : -1);
 
     if (direction === "down" && nextSection >= sections.length) {
-      nextSection = 0; // Wrap back to the first section
+      nextSection = 0;
     } else if (direction === "up" && nextSection < 0) {
-      nextSection = sections.length - 1; // Wrap to the last section
+      nextSection = sections.length - 1;
     }
 
     const section = sections[nextSection];
@@ -99,7 +124,7 @@ const Wrapper = () => {
   };
 
   const shareWrap = () => {
-      const formattedText = `
+    const formattedText = `
 My 2024 Wrapped!      
 
 Top Genres:
@@ -110,21 +135,18 @@ ${artists.map((artist, index) => `${index + 1}. ${artist}`).join("\n")}
 
 Top Songs:
 ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).join("\n")}
-
-Summary:
-${summary}
 `;
 
-      navigator.clipboard.writeText(formattedText.trim())
-        .then(() => {
-          alert("Summary copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy text: ", err);
-          alert("Failed to copy summary.");
-        });
-    };
-
+    navigator.clipboard
+      .writeText(formattedText.trim())
+      .then(() => {
+        alert("Summary copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+        alert("Failed to copy summary.");
+      });
+  };
 
   if (loading) {
     return (
@@ -134,8 +156,8 @@ ${summary}
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
-          backgroundColor: theme.palette.background.default,
-          color: theme.palette.text.primary,
+          backgroundColor: currentTheme.backgroundColor,
+          color: currentTheme.textColor,
         }}
       >
         <Typography variant="h4" sx={{ fontWeight: "bold" }}>
@@ -152,8 +174,8 @@ ${summary}
         width: "100vw",
         height: "100%",
         overflowY: "auto",
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
+        backgroundColor: currentTheme.backgroundColor,
+        color: currentTheme.textColor,
       }}
     >
       {/* Back Button */}
@@ -163,10 +185,11 @@ ${summary}
           top: isMobile ? "12px" : "24px",
           left: isMobile ? "12px" : "24px",
           zIndex: 999,
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
+          backgroundColor: currentTheme.buttonColor,
+          color: theme.palette.common.white,
           "&:hover": {
-            backgroundColor: theme.palette.primary.dark,
+            color: currentTheme.hoverTextColor,
+            backgroundColor: currentTheme.hoverBackgroundColor,
           },
         }}
         onClick={goToProfile}
@@ -180,10 +203,11 @@ ${summary}
           position: "fixed",
           bottom: isMobile ? "12px" : "24px",
           right: isMobile ? "12px" : "24px",
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
+          backgroundColor: currentTheme.buttonColor,
+          color: theme.palette.common.white,
           "&:hover": {
-            backgroundColor: theme.palette.primary.dark,
+            color: currentTheme.hoverTextColor,
+            backgroundColor: currentTheme.hoverBackgroundColor,
           },
         }}
         onClick={() => scrollToSection("down")}
@@ -209,7 +233,9 @@ ${summary}
           }}
         >
           <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3 }}>
-            {section.title}
+            {section.title}{" "}
+            {holiday === "Halloween" && "🎃"}
+            {holiday === "Christmas" && <AcUnitIcon />}
           </Typography>
           <Paper
             elevation={3}
@@ -217,8 +243,9 @@ ${summary}
               p: 4,
               width: "90%",
               maxWidth: "600px",
+              backgroundColor: currentTheme.backgroundColor,
               "&:hover": {
-                boxShadow: `0 8px 16px ${theme.palette.primary.main}`,
+                boxShadow: `0 8px 16px ${currentTheme.buttonColor}`,
               },
             }}
           >
@@ -229,6 +256,7 @@ ${summary}
                   sx={{
                     "&:hover": {
                       backgroundColor: theme.palette.action.hover,
+                      color: currentTheme.hoverTextColor,
                       borderRadius: "8px",
                     },
                   }}
@@ -243,9 +271,11 @@ ${summary}
                     primaryTypographyProps={{
                       fontSize: "1.5rem",
                       fontWeight: "bold",
+                      color: currentTheme.listTextColor,
                     }}
                     secondaryTypographyProps={{
                       fontSize: "1.2rem",
+                      color: currentTheme.listTextColor,
                     }}
                   />
                 </ListItem>
@@ -254,97 +284,206 @@ ${summary}
           </Paper>
         </Box>
       ))}
-
-      {/* Summary */}
-        <Box
-          className="section"
-          sx={{
-            height: "auto",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 4,
-            padding: 4,
-          }}
-        >
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              width: "100%",
-              marginBottom: isMobile ? 4 : 0,
-            }}
-          >
-            {t("summary")}
-          </Typography>
-          <Paper
-            elevation={3}
-            sx={{
-              flex: 1,
-              maxWidth: isMobile ? "100%" : "600px", // Adjust width for a single text box
-              p: 4,
-              "&:hover": {
-                boxShadow: `0 8px 16px ${theme.palette.primary.main}`,
-              },
-            }}
-          >
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-              {t("Summary")}
-            </Typography>
-            <Typography variant="body1" sx={{ textAlign: "justify" }}>
-              {summary || t("loadingSummary")}
-            </Typography>
-          </Paper>
-        </Box>
-
-      {/* Save and Share Buttons */}
+      {/* Summary Section */}
       <Box
+        className="section"
         sx={{
-          position: "fixed",
-          bottom: isMobile ? "20px" : "40px",
-          left: "50%",
-          transform: "translateX(-50%)",
+          height: "auto",
           display: "flex",
-          gap: 2,
-          zIndex: 999,
-          opacity: 0.3,
-          transition: "opacity 0.3s ease-in-out",
-          "&:hover": {
-            opacity: 1,
-          },
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 4,
+          padding: 4,
+          mt: 6,
         }}
       >
-        <Button
-          variant="contained"
-          startIcon={<SaveIcon />}
+        {/* Title */}
+        <Typography
+          variant="h4"
           sx={{
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
+            fontWeight: "bold",
+            mb: 3,
+            textAlign: "center",
+            color: currentTheme.textColor,
+          }}
+        >
+          {t("Summary")}
+        </Typography>
+
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            width: "90%",
+            maxWidth: "800px",
+            backgroundColor: currentTheme.backgroundColor,
             "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
+              boxShadow: `0 8px 16px ${currentTheme.buttonColor}`,
             },
           }}
-          onClick={saveWrap}
         >
-          {t("save")}
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<ShareIcon />}
-          sx={{
-            backgroundColor: theme.palette.secondary.main,
-            color: theme.palette.secondary.contrastText,
-            "&:hover": {
-              backgroundColor: theme.palette.secondary.dark,
-            },
-          }}
-          onClick={shareWrap}
-        >
-          {t("share")}
-        </Button>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 4,
+              flexWrap: "wrap", // Ensure responsiveness
+              borderTop: `1px solid ${theme.palette.divider}`,
+              pt: 2, // Add padding after the top border
+            }}
+          >
+            {/* Top Genres Column */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: "200px",
+                textAlign: "center",
+                borderRight: { xs: "none", sm: `1px solid ${theme.palette.divider}` },
+                pr: { sm: 2 },
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  mb: 2,
+                  fontWeight: "bold",
+                  color: currentTheme.textColor,
+                }}
+              >
+                {t("Top Genres")}
+              </Typography>
+              <List>
+                {genres.length > 0
+                  ? genres.map((genre, index) => (
+                      <ListItem key={index} sx={{ padding: 0 }}>
+                        <ListItemText primary={`${index + 1}. ${genre}`} />
+                      </ListItem>
+                    ))
+                  : t("No genres available.")}
+              </List>
+            </Box>
+
+            {/* Top Artists Column */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: "200px",
+                textAlign: "center",
+                borderRight: { xs: "none", sm: `1px solid ${theme.palette.divider}` },
+                pr: { sm: 2 },
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  mb: 2,
+                  fontWeight: "bold",
+                  color: currentTheme.textColor,
+                }}
+              >
+                {t("Top Artists")}
+              </Typography>
+              <List>
+                {artists.length > 0
+                  ? artists.map((artist, index) => (
+                      <ListItem key={index} sx={{ padding: 0 }}>
+                        <ListItemText primary={`${index + 1}. ${artist}`} />
+                      </ListItem>
+                    ))
+                  : t("No artists available.")}
+              </List>
+            </Box>
+
+            {/* Top Songs Column */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: "200px",
+                textAlign: "center",
+                pr: { sm: 2 },
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  mb: 2,
+                  fontWeight: "bold",
+                  color: currentTheme.textColor,
+                }}
+              >
+                {t("Top Songs")}
+              </Typography>
+              <List>
+                {songs.length > 0
+                  ? songs.map((song, index) => (
+                      <ListItem key={index} sx={{ padding: 0 }}>
+                        <ListItemText primary={`${index + 1}. ${song.title} by ${song.artist}`} />
+                      </ListItem>
+                    ))
+                  : t("No songs available.")}
+              </List>
+            </Box>
+          </Box>
+        </Paper>
       </Box>
+
+      {/* Save and Share Buttons */}
+          <Box
+      sx={{
+        position: "fixed",
+        bottom: isMobile ? "20px" : "40px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex",
+        gap: 2,
+        zIndex: 999,
+      }}
+    >
+      <Button
+        variant="contained"
+        startIcon={<SaveIcon />}
+        sx={{
+          backgroundColor: currentTheme.buttonColor,
+          color: currentTheme.textColor,
+          padding: isMobile ? "8px 12px" : "10px 16px", // Adjust padding for mobile
+          fontSize: isMobile ? "0.75rem" : "1rem", // Smaller text for mobile
+          "&:hover": {
+            backgroundColor: currentTheme.hoverBackgroundColor,
+            color: currentTheme.hoverTextColor,
+          },
+          "&:focus": {
+            backgroundColor: currentTheme.hoverBackgroundColor, // Ensure focus works
+            color: currentTheme.hoverTextColor,
+          },
+        }}
+        onClick={saveWrap}
+      >
+        {t("save")}
+      </Button>
+
+      <Button
+        variant="contained"
+        startIcon={<ShareIcon />}
+        sx={{
+          backgroundColor: currentTheme.buttonColor,
+          color: currentTheme.textColor,
+          padding: isMobile ? "8px 12px" : "10px 16px", // Adjust padding for mobile
+          fontSize: isMobile ? "0.75rem" : "1rem", // Smaller text for mobile
+          "&:hover": {
+            backgroundColor: currentTheme.hoverBackgroundColor,
+            color: currentTheme.hoverTextColor,
+          },
+          "&:focus": {
+            backgroundColor: currentTheme.hoverBackgroundColor, // Ensure focus works
+            color: currentTheme.hoverTextColor,
+          },
+        }}
+        onClick={shareWrap}
+      >
+        {t("share")}
+      </Button>
+    </Box>
     </Box>
   );
 };

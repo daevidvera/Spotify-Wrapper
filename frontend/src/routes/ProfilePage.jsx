@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Stack,
@@ -11,6 +11,8 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import NavBar from '../components/NavBar';
 import SpotifyPreview from '../components/SpotifyPreview';
@@ -18,16 +20,50 @@ import { getCookie } from '../csrf/csrf';
 import axios from 'axios';
 import { UserContext } from '../contexts/UserProvider';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next'; // Import translation hook
+import { useTranslation } from 'react-i18next';
 
 const ProfilePage = () => {
-  const { t } = useTranslation(); // Use translation function
-  const theme = useTheme(); // Access the current theme
+  const { t } = useTranslation();
+  const theme = useTheme();
   const navigate = useNavigate();
   const [deletePromptVisible, setDeletePromptVisible] = useState(false);
   const toggleDeletePrompt = () => setDeletePromptVisible((dpv) => !dpv);
 
-  const { user, userDataLoading } = useContext(UserContext);
+  const { user, userDataLoading, setHoliday } = useContext(UserContext);
+  const [holidayDialogVisible, setHolidayDialogVisible] = useState(false);
+  const [selectedHoliday, setSelectedHoliday] = useState('');
+  const [summary, setSummary] = useState('');
+  const [loadingSummary, setLoadingSummary] = useState(true);
+
+  const holidays = ['Default', 'Halloween', 'Christmas'];
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        setLoadingSummary(true);
+        const response = await axios.get('/api/wrap/summary', {
+          withCredentials: true,
+          params: { spotify_id: user.spotify_id },
+        });
+        setSummary(response.data || 'No summary available.');
+      } catch (error) {
+        console.error('Failed to fetch summary:', error);
+        setSummary('Failed to load description.');
+      } finally {
+        setLoadingSummary(false);
+      }
+    };
+
+    if (user.spotify_id) {
+      fetchSummary();
+    }
+  }, [user.spotify_id]);
+
+  const handleSelectHoliday = () => {
+    setHoliday(selectedHoliday);
+    setHolidayDialogVisible(false);
+    window.alert(`Holiday selected: ${selectedHoliday}`);
+  };
 
   const handleDeleteAccount = () => {
     axios
@@ -48,18 +84,53 @@ const ProfilePage = () => {
   return (
     <ThemeProvider theme={theme}>
       <>
+        {/* Delete Account Dialog */}
         <Dialog open={deletePromptVisible} onClose={toggleDeletePrompt}>
-          <DialogTitle>{t("deleteAccount")}</DialogTitle>
+          <DialogTitle>{t('deleteAccount')}</DialogTitle>
           <DialogContent>
-            <DialogContentText>{t("deleteAccountPrompt")}</DialogContentText>
+            <DialogContentText>{t('deleteAccountPrompt')}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={toggleDeletePrompt}>{t("cancel")}</Button>
-            <Button onClick={handleDeleteAccount}>{t("confirm")}</Button>
+            <Button onClick={toggleDeletePrompt}>{t('cancel')}</Button>
+            <Button onClick={handleDeleteAccount}>{t('confirm')}</Button>
           </DialogActions>
         </Dialog>
-        <Box>
-          <NavBar buttons={[t("home"), t("contact"), t("signOut")]} />
+
+        {/* Holiday Selection Dialog */}
+        <Dialog open={holidayDialogVisible} onClose={() => setHolidayDialogVisible(false)}>
+          <DialogTitle>{t('selectHolidayWrapper')}</DialogTitle>
+          <DialogContent>
+            <Select
+              value={selectedHoliday}
+              onChange={(e) => setSelectedHoliday(e.target.value)}
+              fullWidth
+            >
+              {holidays.map((holiday) => (
+                <MenuItem key={holiday} value={holiday}>
+                  {holiday}
+                </MenuItem>
+              ))}
+            </Select>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setHolidayDialogVisible(false)}>{t('cancel')}</Button>
+            <Button
+              onClick={handleSelectHoliday}
+              disabled={!selectedHoliday}
+            >
+              {t('apply')}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Box
+          sx={{
+            backgroundColor: theme.palette.mode === 'dark' ? '#000000' : theme.palette.background.default,
+            minHeight: '100vh',
+            width: '100%',
+          }}
+        >
+          <NavBar buttons={[t('home'), t('contact'), t('signOut')]} />
           <Box
             sx={{
               display: 'flex',
@@ -87,11 +158,9 @@ const ProfilePage = () => {
                     alignItems: 'center',
                   }}
                 >
-                  {/* Avatar */}
                   <Box>
                     <SpotifyPreview {...user} />
                   </Box>
-                  {/* User Info */}
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography
                       sx={{
@@ -114,10 +183,28 @@ const ProfilePage = () => {
                     </Typography>
                   </Box>
                   <Button
+                    sx={{
+                      width: '80%',
+                      background: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
+                      fontWeight: 900,
+                      borderRadius: '30px',
+                      textTransform: 'none',
+                      padding: { xs: 0.5, sm: 0.75, md: 1 },
+                      fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
+                      '&:hover': {
+                        background: theme.palette.primary.dark,
+                        transform: 'scale(1.1)',
+                      },
+                    }}
+                    onClick={() => setHolidayDialogVisible(true)}
+                  >
+                    {t('selectHolidayWrapper')}
+                  </Button>
+                  <Button
                     key="delete_account"
                     sx={{
                       width: '80%',
-                      maxWidth: { xs: '120px', sm: '200px', md: '250px' },
                       background: theme.palette.error.main,
                       color: theme.palette.common.white,
                       fontWeight: 900,
@@ -127,11 +214,12 @@ const ProfilePage = () => {
                       fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
                       '&:hover': {
                         background: theme.palette.error.dark,
+                        transform: 'scale(1.1)',
                       },
                     }}
                     onClick={toggleDeletePrompt}
                   >
-                    {t("deleteAccount")}
+                    {t('deleteAccount')}
                   </Button>
                 </Stack>
 
@@ -162,9 +250,56 @@ const ProfilePage = () => {
                       letterSpacing: 0.1,
                     }}
                   >
-                    {t("myWraps")}
+                    {t('myWraps')}
                   </Typography>
                 </Box>
+
+                {/* Describing You Section */}
+                {/* Describing You Section */}
+                <Box
+                  sx={{
+                    width: '100%',
+                    maxWidth: { xs: '100%', md: '600px' },
+                    mt: { xs: 4, md: 4 },
+                    ml: { md: 4 },
+                    padding: 4,
+                    backgroundColor: theme.palette.mode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.05)' // Subtle transparency for dark mode
+                      : 'rgba(0, 0, 0, 0.03)', // Subtle transparency for light mode
+                    borderRadius: 2,
+                    boxShadow: theme.shadows[2],
+                    transition: 'transform 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                      boxShadow: theme.shadows[4],
+                    },
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: theme.palette.text.primary,
+                      fontFamily: '"League Spartan", sans-serif',
+                      fontWeight: 500,
+                      mb: 2,
+                    }}
+                  >
+                    {t('Describing You')}
+                  </Typography>
+                  {loadingSummary ? (
+                    <CircularProgress />
+                  ) : (
+                    <Typography
+                      sx={{
+                        fontFamily: '"League Spartan", sans-serif',
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      {summary}
+                    </Typography>
+                  )}
+                </Box>
+              
               </>
             )}
           </Box>

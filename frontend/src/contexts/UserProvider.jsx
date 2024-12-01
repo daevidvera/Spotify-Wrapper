@@ -5,18 +5,12 @@ import { AuthContext } from "./AuthProvider";
 import { LinearProgress, Stack } from "@mui/material";
 import axios from "axios";
 
+const UserContext = createContext();
 
-const UserContext = createContext()
-
-// Provides current user data & functions 
-// NOTE: Except for login/register pages, every page with access to user profile must be authenticated
-// This means it must be a child of RequireAuth
-// So, make sure the page is a protected route in App.jsx
-// NOTE: Values stored in front end can be maliciously changed. Do NOT use these values as authentication!
-// Only use values handled in the back end with session storage etc.
 function UserProvider({ children }) {
     const [user, setUser] = useState(null); // Start with `null` for proper loading state
     const [userDataLoading, setUserDataLoading] = useState(true);
+    const [holiday, setHoliday] = useState("Default"); // Add holiday state
 
     const setUserData = (data) => {
         setUser({
@@ -53,6 +47,8 @@ function UserProvider({ children }) {
                 user,
                 refreshUserData,
                 userDataLoading,
+                holiday,
+                setHoliday, // Add setHoliday to context value
             }}
         >
             {userDataLoading ? (
@@ -67,5 +63,4 @@ function UserProvider({ children }) {
     );
 }
 
-
-export {UserContext, UserProvider}
+export { UserContext, UserProvider };

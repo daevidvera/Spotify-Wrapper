@@ -90,6 +90,9 @@ function Navbar({ buttons }) {
                 "& .MuiDrawer-paper": {
                   backgroundColor: theme.palette.background.default,
                   color: theme.palette.text.primary,
+                  display: "flex",
+                  justifyContent: "center", // Center items vertically
+                  alignItems: "center", // Center items horizontally
                 },
               }}
             >
@@ -151,7 +154,7 @@ function Navbar({ buttons }) {
               alignItems: "center",
               flexGrow: 1, // Push buttons to the center
               gap: 5, // Add spacing between buttons
-              marginRight: "130px"
+              marginRight: "130px",
             }}
           >
             <Button onClick={navigateHome} sx={{ color: theme.palette.text.primary }}>
