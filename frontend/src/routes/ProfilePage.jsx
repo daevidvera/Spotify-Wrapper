@@ -33,7 +33,6 @@ const ProfilePage = () => {
     const [deleteWrapPromptVisible, setDeleteWrapPromptVisible] = useState(false);
     const [savedWraps, setSavedWraps] = useState([]);
     const [loadingWraps, setLoadingWraps] = useState(false);
-
     const [deleteWrapId, setDeleteWrapId] = useState(null);
 
     const toggleDeleteAccountPrompt = () => {
@@ -302,114 +301,7 @@ const ProfilePage = () => {
                     {t('deleteAccount')}
                   </Button>
                 </Stack>
-    return (
-        <ThemeProvider theme={theme}>
-            <>
-            {/* Wrap Deletion Dialog */}
-            <Dialog open={deleteWrapPromptVisible} onClose={() => toggleDeleteWrapPrompt()}>
-              <DialogTitle>{t('deleteWrap')}</DialogTitle>
-              <DialogContent>
-                <DialogContentText>{t('deleteWrapPrompt')}</DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => toggleDeleteWrapPrompt()}>{t('cancel')}</Button>
-                <Button color="error" onClick={handleDeleteWrap}>
-                  {t('confirm')}
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-            {/* Account Deletion Dialog */}
-            <Dialog open={deleteAccountPromptVisible} onClose={toggleDeleteAccountPrompt}>
-              <DialogTitle>{t('deleteAccount')}</DialogTitle>
-              <DialogContent>
-                <DialogContentText>{t('deleteAccountPrompt')}</DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={toggleDeleteAccountPrompt}>{t('cancel')}</Button>
-                <Button onClick={handleDeleteAccount}>{t('confirm')}</Button>
-              </DialogActions>
-            </Dialog>
-
-            <Box>
-              <NavBar buttons={[t("home"), t("contact"), t("signOut")]} />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  width: '100%',
-                  maxWidth: '1200px',
-                  margin: '0 auto',
-                  padding: 5,
-                  mt: { xs: 4, sm: 6, md: 8 },
-                }}
-              >
-                {loadingWraps ? (
-                  <Stack sx={{ width: '100%', alignItems: 'center' }}>
-                    <CircularProgress />
-                  </Stack>
-                ) : (
-                  <>
-                    <Stack
-                      spacing={2}
-                      sx={{
-                        width: '100%',
-                        maxWidth: { xs: '100%', md: '250px' },
-                        alignItems: 'center',
-                      }}
-                    >
-                      {/* Avatar */}
-                      <Box>
-                        <SpotifyPreview {...user} />
-                      </Box>
-                      {/* User Info */}
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography
-                          sx={{
-                            fontFamily: '"League Spartan", sans-serif',
-                            fontWeight: 900,
-                            fontSize: { xs: '1.2rem', sm: '1.7rem', md: '1.9rem' },
-                            color: theme.palette.text.primary,
-                          }}
-                        >
-                          @{user['username']}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontFamily: '"League Spartan", sans-serif',
-                            color: theme.palette.text.secondary,
-                          }}
-                          variant="button"
-                        >
-                          {user['email']}
-                        </Typography>
-                      </Box>
-                      <Button
-                        key="delete_account"
-                        sx={{
-                          width: '80%',
-                          maxWidth: { xs: '120px', sm: '200px', md: '250px' },
-                          background: theme.palette.error.main,
-                          color: theme.palette.common.white,
-                          fontWeight: 900,
-                          borderRadius: '30px',
-                          textTransform: 'none',
-                          padding: { xs: 0.5, sm: 0.75, md: 1 },
-                          fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
-                          '&:hover': {
-                            background: theme.palette.error.dark,
-                          },
-                        }}
-                        onClick={toggleDeleteAccountPrompt}
-                      >
-                        {t("deleteAccount")}
-                      </Button>
-                    </Stack>
-
-                    {/* My Wraps */}
-                    <Box
+                     <Box
                       sx={{
                         width: '100%',
                         maxWidth: { xs: '100%', md: '600px' },
@@ -482,43 +374,6 @@ const ProfilePage = () => {
                         </Typography>
                       )}
                     </Box>
-                  </>
-                )}
-              </Box>
-            </Box>
-          </>
-        </ThemeProvider>
-      );
-                {/* My Wraps */}
-                <Box
-                  sx={{
-                    width: '100%',
-                    maxWidth: { xs: '100%', md: '600px' },
-                    mt: { xs: 4, md: 0 },
-                    ml: { md: 4 },
-                    padding: 4,
-                    backgroundColor: theme.palette.background.paper,
-                    borderRadius: 2,
-                    textAlign: 'center',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    boxShadow: theme.shadows[2],
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: theme.palette.text.primary,
-                      fontSize: { xs: '1rem', sm: '1.2rem', md: '1.4rem' },
-                      fontFamily: '"League Spartan", sans-serif',
-                      fontWeight: 500,
-                      letterSpacing: 0.1,
-                    }}
-                  >
-                    {t('myWraps')}
-                  </Typography>
-                </Box>
 
                 {/* Describing You Section */}
                 {/* Describing You Section */}
@@ -574,5 +429,120 @@ const ProfilePage = () => {
     </ThemeProvider>
   );
 };
+
+
+// return (
+//         <ThemeProvider theme={theme}>
+//             <>
+//             {/* Wrap Deletion Dialog */}
+//             <Dialog open={deleteWrapPromptVisible} onClose={() => toggleDeleteWrapPrompt()}>
+//               <DialogTitle>{t('deleteWrap')}</DialogTitle>
+//               <DialogContent>
+//                 <DialogContentText>{t('deleteWrapPrompt')}</DialogContentText>
+//               </DialogContent>
+//               <DialogActions>
+//                 <Button onClick={() => toggleDeleteWrapPrompt()}>{t('cancel')}</Button>
+//                 <Button color="error" onClick={handleDeleteWrap}>
+//                   {t('confirm')}
+//                 </Button>
+//               </DialogActions>
+//             </Dialog>
+//
+//             {/* Account Deletion Dialog */}
+//             <Dialog open={deleteAccountPromptVisible} onClose={toggleDeleteAccountPrompt}>
+//               <DialogTitle>{t('deleteAccount')}</DialogTitle>
+//               <DialogContent>
+//                 <DialogContentText>{t('deleteAccountPrompt')}</DialogContentText>
+//               </DialogContent>
+//               <DialogActions>
+//                 <Button onClick={toggleDeleteAccountPrompt}>{t('cancel')}</Button>
+//                 <Button onClick={handleDeleteAccount}>{t('confirm')}</Button>
+//               </DialogActions>
+//             </Dialog>
+//
+//             <Box>
+//               <NavBar buttons={[t("home"), t("contact"), t("signOut")]} />
+//               <Box
+//                 sx={{
+//                   display: 'flex',
+//                   flexDirection: { xs: 'column', md: 'row' },
+//                   justifyContent: 'space-between',
+//                   alignItems: 'flex-start',
+//                   width: '100%',
+//                   maxWidth: '1200px',
+//                   margin: '0 auto',
+//                   padding: 5,
+//                   mt: { xs: 4, sm: 6, md: 8 },
+//                 }}
+//               >
+//                 {loadingWraps ? (
+//                   <Stack sx={{ width: '100%', alignItems: 'center' }}>
+//                     <CircularProgress />
+//                   </Stack>
+//                 ) : (
+//                   <>
+//                     <Stack
+//                       spacing={2}
+//                       sx={{
+//                         width: '100%',
+//                         maxWidth: { xs: '100%', md: '250px' },
+//                         alignItems: 'center',
+//                       }}
+//                     >
+//                       {/* Avatar */}
+//                       <Box>
+//                         <SpotifyPreview {...user} />
+//                       </Box>
+//                       {/* User Info */}
+//                       <Box sx={{ textAlign: 'center' }}>
+//                         <Typography
+//                           sx={{
+//                             fontFamily: '"League Spartan", sans-serif',
+//                             fontWeight: 900,
+//                             fontSize: { xs: '1.2rem', sm: '1.7rem', md: '1.9rem' },
+//                             color: theme.palette.text.primary,
+//                           }}
+//                         >
+//                           @{user['username']}
+//                         </Typography>
+//                         <Typography
+//                           sx={{
+//                             fontFamily: '"League Spartan", sans-serif',
+//                             color: theme.palette.text.secondary,
+//                           }}
+//                           variant="button"
+//                         >
+//                           {user['email']}
+//                         </Typography>
+//                       </Box>
+//                       <Button
+//                         key="delete_account"
+//                         sx={{
+//                           width: '80%',
+//                           maxWidth: { xs: '120px', sm: '200px', md: '250px' },
+//                           background: theme.palette.error.main,
+//                           color: theme.palette.common.white,
+//                           fontWeight: 900,
+//                           borderRadius: '30px',
+//                           textTransform: 'none',
+//                           padding: { xs: 0.5, sm: 0.75, md: 1 },
+//                           fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' },
+//                           '&:hover': {
+//                             background: theme.palette.error.dark,
+//                           },
+//                         }}
+//                         onClick={toggleDeleteAccountPrompt}
+//                       >
+//                         {t("deleteAccount")}
+//                       </Button>
+//                     </Stack>
+//
+//
+//                   </>
+//                 )}
+//               </Box>
+//             </Box>
+//           </>
+//         </ThemeProvider>
 
 export default ProfilePage;

@@ -126,14 +126,13 @@ const Wrapper = () => {
           genres,
           artists,
           songs,
-          summary,
         };
 
         const response = await axios.post(
           "/api/user/save-wrap/",
           {
             wrapper_data: wrapperData,
-            spotify_id: user.user.spotify_id,
+            spotify_id: user.spotify_id,
           },
           {
             headers: {
@@ -142,8 +141,6 @@ const Wrapper = () => {
             withCredentials: true,
           }
         );
-
-        console.log(response)
 
         if (response.status === 201) {
           alert("Spotify Wrapped saved successfully!");
