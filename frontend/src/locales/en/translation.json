@@ -48,7 +48,13 @@
   "save": "save",
   "share": "share",
    "selectHolidayWrapper": "yourHolidayWrapper",
-    "apply": "Apply"
-  
-  
+    "apply": "Apply", 
+  "meetTheTeam": "Meet The Team!",
+  "contactDevelopers": "Contact the Developers",
+  "selectDeveloperEmail": "Select a developer's email",
+  "typeFeedback": "Type your feedback here...",
+  "submitFeedback": "Submit Feedback",
+  "backendDeveloper": "Backend Developer",
+  "frontendDeveloper": "Frontend Developer",
+  "feedbackSubmitted": "Feedback submitted: {{feedback}}"
 }

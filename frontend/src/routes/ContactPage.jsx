@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, MenuItem, Select, Stack, TextField, Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import NavBar from '../components/NavBar';
 import developerImage1 from '../assets/developer1.jpeg';
 import developerImage2 from '../assets/developer2.jpeg';
@@ -9,15 +10,16 @@ import developerImage5 from '../assets/developer5.jpeg';
 
 const ContactPage = () => {
     const theme = useTheme(); // Access the current theme
+    const { t } = useTranslation(); // Access translations
     const [selectedEmail, setSelectedEmail] = useState('');
     const [feedback, setFeedback] = useState('');
 
     const developerEmails = [
-        { name: "@alberto.", role: "Backend Developer", email: "alberticoalvarez123@gmail.com", linkedIn: "https://www.linkedin.com/in/albertoalvarez0926", img: developerImage1 },
-        { name: "@boris.", role: "Frontend Developer", email: "boriskodappully@gmail.com", linkedIn: "https://www.linkedin.com/in/boris-kodappully-78687a164", img: developerImage2 },
-        { name: "@david.", role: "Frontend Developer", email: "carlosrescoto04@gmail.com", linkedIn: "https://www.linkedin.com/in/daevidvera", img: developerImage3 },
-        { name: "@devanshi.", role: "Frontend Developer", email: "sooddevanshi@gmail.com", img: developerImage4 },
-        { name: "@saketh.", role: "Backend Developer", email: "saketh.budideti@gmail.com", linkedIn: "https://www.linkedin.com/in/sbudideti", img: developerImage5 }
+        { name: "@alberto.", role: t("backendDeveloper"), email: "alberticoalvarez123@gmail.com", linkedIn: "https://www.linkedin.com/in/albertoalvarez0926", img: developerImage1 },
+        { name: "@boris.", role: t("frontendDeveloper"), email: "boriskodappully@gmail.com", linkedIn: "https://www.linkedin.com/in/boris-kodappully-78687a164", img: developerImage2 },
+        { name: "@david.", role: t("frontendDeveloper"), email: "carlosrescoto04@gmail.com", linkedIn: "https://www.linkedin.com/in/daevidvera", img: developerImage3 },
+        { name: "@devanshi.", role: t("frontendDeveloper"), email: "sooddevanshi@gmail.com", linkedIn: "https://www.linkedin.com/in/devanshi-sood/", img: developerImage4 },
+        { name: "@saketh.", role: t("backendDeveloper"), email: "saketh.budideti@gmail.com", linkedIn: "https://www.linkedin.com/in/sbudideti", img: developerImage5 }
     ];
 
     const handleEmailSelect = (event) => {
@@ -30,7 +32,7 @@ const ContactPage = () => {
     };
 
     const handleSubmitFeedback = () => {
-        alert(`Feedback submitted: ${feedback}`);
+        alert(t("feedbackSubmitted", { feedback }));
         setFeedback('');
     };
 
@@ -45,7 +47,7 @@ const ContactPage = () => {
             }}
         >
             {/* Navbar */}
-            <NavBar buttons={["Home", "Profile", "Sign Out"]} />
+            <NavBar buttons={[t("home"), t("profile"), t("signOut")]} />
 
             {/* Main content area */}
             <Box
@@ -77,7 +79,7 @@ const ContactPage = () => {
                             fontWeight: 800,
                         }}
                     >
-                        Meet The Team!
+                        {t("meetTheTeam")}
                     </Typography>
                     <Stack
                         direction="row"
@@ -167,7 +169,7 @@ const ContactPage = () => {
                             fontSize: { xs: '1.5rem', md: '2rem' },
                         }}
                     >
-                        Contact the Developers
+                        {t("contactDevelopers")}
                     </Typography>
 
                     {/* Dropdown for developer emails */}
@@ -200,7 +202,7 @@ const ContactPage = () => {
                             },
                         }}
                         renderValue={(selected) =>
-                            selected ? selected : "Select a developer's email"
+                            selected ? selected : t("selectDeveloperEmail")
                         }
                     >
                         {developerEmails.map((dev) => (
@@ -212,7 +214,7 @@ const ContactPage = () => {
 
                     {/* Feedback text box */}
                     <TextField
-                        placeholder="Type your feedback here..."
+                        placeholder={t("typeFeedback")}
                         value={feedback}
                         onChange={handleFeedbackChange}
                         multiline
@@ -255,7 +257,7 @@ const ContactPage = () => {
                             },
                         }}
                     >
-                        Submit Feedback
+                        {t("submitFeedback")}
                     </Button>
                 </Box>
             </Box>

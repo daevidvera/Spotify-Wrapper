@@ -45,8 +45,25 @@
     "register": "Registrar",
       "save": "Guardar",
     "share": "Compartir",
-    "selectHolidayWrapper": "tuHolidayWrapper",
-    "apply": "Applicar"
+  "deleteWrap": "Eliminar Wrap",
+  "deleteWrapPrompt": "¿Estás seguro de que deseas eliminar este wrap? Esta acción no se puede deshacer.",
+  "selectHolidayWrapper": "Seleccionar Tema de Fiesta",
+  "apply": "Aplicar",
+  "noWraps": "No hay wraps guardados.",
+  "Describing You": "Describiéndote",
+  "noSummaryAvailable": "No hay resumen disponible.",
+  "failedToLoadDescription": "Error al cargar la descripción.",
+  "Open Wrap": "Abrir Wrap",
+  "Delete Wrap": "Eliminar Wrap",
+  "holidaySelected": "Fiesta seleccionada: {{holiday}}",
+  "meetTheTeam": "¡Conoce al Equipo!",
+  "contactDevelopers": "Contacta a los Desarrolladores",
+  "selectDeveloperEmail": "Selecciona el correo de un desarrollador",
+  "typeFeedback": "Escribe tu opinión aquí...",
+  "submitFeedback": "Enviar Opinión",
+  "backendDeveloper": "Desarrollador Backend",
+  "frontendDeveloper": "Desarrollador Frontend",
+  "feedbackSubmitted": "Opinión enviada: {{feedback}}"
   
 
 }
