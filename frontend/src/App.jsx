@@ -69,7 +69,7 @@ function App() {
 
           {/* Application Routes */}
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/main" replace />} />
             {noAuthRoutes.map(({ path, Element }) => (
               <Route
                 path={path}

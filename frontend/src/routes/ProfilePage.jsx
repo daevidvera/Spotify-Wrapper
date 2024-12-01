@@ -121,10 +121,74 @@ const ProfilePage = () => {
   }, [user.spotify_id, currentLanguage]);
 
   const handleSelectHoliday = () => {
-    setHoliday(selectedHoliday);
-    setHolidayDialogVisible(false);
-    alert(t("holidaySelected", { holiday: selectedHoliday }));
+        setHoliday(selectedHoliday);
+        setHolidayDialogVisible(false);
+        window.alert(`Holiday selected: ${selectedHoliday}`);
   };
+
+  const handleDeleteAccount = () => {
+        axios.delete('/api/user/delete-account/', {
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken'),
+            },
+            withCredentials: true,
+          })
+          .then(() => navigate('/login'))
+          .catch((ex) => {
+            console.error('Account deletion failed: ', ex.response?.data || ex.message);
+            window.alert('An error has occurred in deleting your account. Check console for more information.');
+            toggleDeleteAccountPrompt();
+          });
+  };
+
+  const handleDeleteWrap = async () => {
+      try {
+          await axios.delete('/api/user/delete-wrap/', {
+              params: {
+                  spotify_id: user.spotify_id,
+                  wrap_id: deleteWrapId
+                },
+              headers: {
+                  'X-CSRFToken': getCookie('csrftoken'),
+                },
+              withCredentials: true,
+          });
+
+            // Remove the deleted wrap from the state
+          setSavedWraps(prevWraps =>
+              prevWraps.filter(wrap => wrap.id !== deleteWrapId)
+          );
+
+            // Close the delete prompt
+          toggleDeleteWrapPrompt();
+    } catch (error) {
+          console.error('Error deleting wrap:', error.response?.data || error.message);
+          window.alert('Failed to delete wrap. Please try again.');
+        }
+  };
+
+    useEffect(() => {
+          const fetchSavedWraps = async () => {
+              setLoadingWraps(true);
+              try {
+                  const response = await axios.get('/api/user/get-saved-wraps/', {
+                      params: { spotify_id: user.spotify_id },
+                      withCredentials: true,
+                      headers: {
+                          'X-CSRFToken': getCookie('csrftoken'),
+                      },
+                  });
+
+                  setSavedWraps(response.data || []);
+
+              } catch (error) {
+                  console.error('Error fetching saved wraps:', error.response?.data || error.message);
+              } finally {
+                  setLoadingWraps(false);
+              }
+          };
+          fetchSavedWraps();
+      }, [user.spotify_id]);
 
   return (
     <ThemeProvider theme={theme}>

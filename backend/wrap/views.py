@@ -37,21 +37,18 @@ def fetch_spotify_data(endpoint, access_token, params=None, time_range="medium_t
         return None
 
 
-def get_valid_token(session):
+def get_valid_token(user):
     """
     Ensure the access token is valid and refresh it if expired.
     """
-    access_token = session.get('access_token')
-    refresh_token = session.get('refresh_token')
-    last_refresh = session.get('last_refresh')
-
+    access_token = user.access_token
+    refresh_token = user.refresh_token
+    last_refresh = user.last_refresh
 
     if not access_token or not refresh_token or not last_refresh:
         return None
 
-    # Check if the token has expired
-    last_refresh_time = now() - timedelta(seconds=3600)  # Simulate token expiration
-    if now() >= last_refresh_time + timedelta(seconds=3600):
+    if now() >= last_refresh + timedelta(seconds=3600):
         try:
             response = requests.post(
                 SPOTIFY_TOKEN_URL,
@@ -64,13 +61,15 @@ def get_valid_token(session):
             )
             response.raise_for_status()
             token_info = response.json()
-            session['access_token'] = token_info.get('access_token')
-            session['refresh_token'] = token_info.get('refresh_token', refresh_token)
-            session['last_refresh'] = now().isoformat()
+            access_token = token_info.get("access_token")
+            user.access_token = access_token
+            user.save()
+
+            user.last_refresh = now()
         except Exception as e:
             return None
 
-    return session['access_token']
+    return access_token
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -87,7 +86,7 @@ def top_artists(request):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Use the user's access token
-    access_token = user.access_token
+    access_token = get_valid_token(user)
     if not access_token:
         return Response({'error': 'User does not have a valid access token'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -119,7 +118,7 @@ def top_genres(request):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Use the user's access token
-    access_token = user.access_token
+    access_token = get_valid_token(user)
     if not access_token:
         return Response({'error': 'User does not have a valid access token'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -152,7 +151,7 @@ def top_songs(request):
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    access_token = user.access_token
+    access_token = get_valid_token(user)
     if not access_token:
         return Response({'error': 'User does not have a valid access token'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -189,7 +188,7 @@ def get_summary(request):
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    access_token = user.access_token
+    access_token = get_valid_token(user)
     songs_data = fetch_spotify_data("me/top/tracks", access_token, params={"limit": 5})
     if not songs_data:
         return Response({'error': 'Failed to retrieve top tracks'}, status=status.HTTP_400_BAD_REQUEST)

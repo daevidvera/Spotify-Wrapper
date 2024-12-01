@@ -85,18 +85,27 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        request.session.clear()
         logout(request)
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
     
 
 # User delete API
 class DeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def delete(self, request, *args, **kwargs):
+        # Ensure user is fully saved
         user = request.user
-        user_str = str(user)
-        user.delete()
+
+        # Explicitly save user to ensure it has a primary key
+        if not user.pk:
+            user.save()
+
         user.saved_wraps.all().delete()
-        return Response({'message': f"User {user_str} deleted successfully"})
+        user.delete()
+
+        return Response({'message': f"User {user} deleted successfully"})
     
 
 # Gets user profile information 

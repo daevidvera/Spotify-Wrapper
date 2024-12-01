@@ -51,9 +51,8 @@ function CreateAccount() {
 
   const handleFormSubmit = () => {
     setFormErrors({});
-    axios
-      .post("api/user/register/", formData)
-      .then(() => navigate("/profile"))
+    axios.post("api/user/register/", formData)
+      .then(() => navigate("/main"))
       .catch((ex) => {
         const res = ex.response;
         if (res && res.status === 400) {
