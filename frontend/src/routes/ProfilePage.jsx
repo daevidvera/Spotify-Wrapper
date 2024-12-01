@@ -23,7 +23,8 @@ import { getCookie } from '../csrf/csrf';
 import axios from 'axios';
 import { UserContext } from '../contexts/UserProvider';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next'; // Import translation hook
+import { useTranslation } from 'react-i18next';
+import {useLanguage} from "../contexts/LanguageProvider.jsx"; // Import translation hook
 
 const ProfilePage = () => {
     const { t } = useTranslation(); // Use translation function
@@ -34,6 +35,8 @@ const ProfilePage = () => {
     const [savedWraps, setSavedWraps] = useState([]);
     const [loadingWraps, setLoadingWraps] = useState(false);
     const [deleteWrapId, setDeleteWrapId] = useState(null);
+
+    const { currentLanguage } = useLanguage();
 
     const toggleDeleteAccountPrompt = () => {
         setDeleteAccountPromptVisible((visible) => !visible);
@@ -59,7 +62,10 @@ const ProfilePage = () => {
         setLoadingSummary(true);
         const response = await axios.get('/api/wrap/summary', {
           withCredentials: true,
-          params: { spotify_id: user.spotify_id },
+          params: {
+              spotify_id: user.spotify_id,
+              cur_language: currentLanguage,
+          },
         });
         setSummary(response.data || 'No summary available.');
       } catch (error) {
@@ -73,7 +79,7 @@ const ProfilePage = () => {
     if (user.spotify_id) {
       fetchSummary();
     }
-  }, [user.spotify_id]);
+  }, [user.spotify_id, currentLanguage]);
 
   const handleSelectHoliday = () => {
     setHoliday(selectedHoliday);

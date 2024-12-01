@@ -80,7 +80,7 @@ function RequireNoAuth({children}) {
             </Stack>
         )
     else if(isAuthorized)
-        return <Navigate to='/profile' />
+        return <Navigate to='/main' />
     else
         return children
 }

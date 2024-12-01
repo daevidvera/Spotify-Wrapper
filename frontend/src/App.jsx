@@ -14,16 +14,15 @@ import ContactPage from './routes/ContactPage';
 import { AuthProvider, RequireAuth, RequireNoAuth } from './contexts/AuthProvider';
 import { UserProvider } from './contexts/UserProvider';
 import Wrapper from './routes/Wrapper';
-
-// Import i18n setup
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import { LanguageProvider, useLanguage } from './contexts/LanguageProvider.jsx';
+import LanguageMenu from "./routes/LanguageMenu.jsx";
+
 
 function App() {
   // State for theme mode
   const [mode, setMode] = useState('light');
-  const [languageAnchorEl, setLanguageAnchorEl] = useState(null); // State for language menu
-  const { i18n } = useTranslation(); // Translation hook
 
   const toggleTheme = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
@@ -31,125 +30,73 @@ function App() {
 
   const theme = getTheme(mode);
 
-  const handleLanguageMenuOpen = (event) => {
-    setLanguageAnchorEl(event.currentTarget);
-  };
-
-  const handleLanguageMenuClose = () => {
-    setLanguageAnchorEl(null);
-  };
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    handleLanguageMenuClose();
-  };
-
   const noAuthRoutes = [
-    { path: '/login', Element: Login },
-    { path: '/signin', Element: SignIn },
-    { path: '/account', Element: CreateAccount },
+      { path: '/login', Element: Login },
+      { path: '/signin', Element: SignIn },
+      { path: '/account', Element: CreateAccount },
   ];
 
   const authRoutes = [
-    { path: '/contact', Element: ContactPage },
-    { path: '/profile', Element: ProfilePage },
-    { path: '/main', Element: MainPage },
-    { path: '/wrapper', Element: Wrapper },
-    
+      { path: '/contact', Element: ContactPage },
+      { path: '/profile', Element: ProfilePage },
+      { path: '/main', Element: MainPage },
+      { path: '/wrapper', Element: Wrapper },
   ];
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        {/* Top-right corner buttons */}
-        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 9999, display: 'flex', gap: 1 }}>
-          {/* Dark Mode Toggle */}
-          <IconButton
-            onClick={toggleTheme}
-            sx={{
-              color: theme.palette.text.primary,
-              backgroundColor: theme.palette.action.hover,
-              borderRadius: '8px',
-              '&:hover': {
-                backgroundColor: theme.palette.action.selected,
-              },
-            }}
-          >
-            {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
-          </IconButton>
-
-          {/* Language Dropdown Button */}
-          <Button
-            variant="outlined"
-            sx={{
-              color: theme.palette.text.primary,
-              borderColor: theme.palette.divider,
-              textTransform: 'none',
-              fontSize: '0.875rem',
-              padding: '6px 16px',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              '&:hover': {
-                borderColor: theme.palette.text.primary,
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-            onClick={handleLanguageMenuOpen}
-          >
-            {i18n.language.toUpperCase()}
-          </Button>
-          <Menu
-            anchorEl={languageAnchorEl}
-            open={Boolean(languageAnchorEl)}
-            onClose={handleLanguageMenuClose}
-            sx={{
-              '& .MuiPaper-root': {
-                backgroundColor: theme.palette.background.paper,
+        <LanguageProvider>
+          <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 9999, display: 'flex', gap: 1 }}>
+            <IconButton
+              onClick={toggleTheme}
+              sx={{
                 color: theme.palette.text.primary,
+                backgroundColor: theme.palette.action.hover,
                 borderRadius: '8px',
-                boxShadow: theme.shadows[4],
-              },
-            }}
-          >
-            <MenuItem onClick={() => changeLanguage('en')}>English</MenuItem>
-            <MenuItem onClick={() => changeLanguage('es')}>Español</MenuItem>
-            <MenuItem onClick={() => changeLanguage('fr')}>Français</MenuItem>
-          </Menu>
-        </Box>
+                '&:hover': {
+                  backgroundColor: theme.palette.action.selected,
+                },
+              }}
+            >
+              {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+            </IconButton>
 
-        {/* Application Routes */}
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Language Dropdown Button */}
+            <LanguageMenu />
+          </Box>
 
-          {noAuthRoutes.map(({ path, Element }) => (
-            <Route
-              path={path}
-              key={path}
-              element={
-                <RequireNoAuth>
-                  <Element />
-                </RequireNoAuth>
-              }
-            />
-          ))}
-
-          {authRoutes.map(({ path, Element }) => (
-            <Route
-              path={path}
-              key={path}
-              element={
-                <RequireAuth>
-                  <UserProvider>
+          {/* Application Routes */}
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            {noAuthRoutes.map(({ path, Element }) => (
+              <Route
+                path={path}
+                key={path}
+                element={
+                  <RequireNoAuth>
                     <Element />
-                  </UserProvider>
-                </RequireAuth>
-              }
-            />
-          ))}
-        </Routes>
+                  </RequireNoAuth>
+                }
+              />
+            ))}
+
+            {authRoutes.map(({ path, Element }) => (
+              <Route
+                path={path}
+                key={path}
+                element={
+                  <RequireAuth>
+                    <UserProvider>
+                      <Element />
+                    </UserProvider>
+                  </RequireAuth>
+                }
+              />
+            ))}
+          </Routes>
+        </LanguageProvider>
       </AuthProvider>
     </ThemeProvider>
   );

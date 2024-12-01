@@ -172,6 +172,10 @@ def top_songs(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_summary(request):
+    cur_language = request.query_params.get('cur_language')
+    if not cur_language:
+        cur_language = "en"
+
     spotify_id = request.query_params.get('spotify_id')
     if not spotify_id:
         return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -226,7 +230,7 @@ def get_summary(request):
             model="gpt-4o-mini",
             messages=[
                 {"role": "system",
-                 "content": "Only output a summary based on the input data. Do not include any additional information."},
+                 "content": f"Only output a summary based on the input data in the language {cur_language}. Do not include any additional information."},
                 {"role": "user", "content": f"{summary_prompt}"}
             ]
         )
