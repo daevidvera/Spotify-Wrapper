@@ -227,7 +227,6 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
           top: isMobile ? "12px" : "24px",
           left: isMobile ? "12px" : "24px",
           zIndex: 999,
-          backgroundColor: currentTheme.buttonColor,
         backgroundColor: isDarkMode ? "#000000" : "#ffffff", // Black in dark mode, white in light mode
         color: isDarkMode ? "#ffffff" : "#000000", // White icon in dark mode, black icon in light mode
         "&:hover": {
@@ -248,7 +247,6 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
             position: "fixed",
             bottom: "24px",
             right: "24px",
-            backgroundColor: currentTheme.buttonColor,
             backgroundColor: isDarkMode ? "#000000" : "#ffffff", // Black in dark mode, white in light mode
             color: isDarkMode ? "#ffffff" : "#000000", // White icon in dark mode, black icon in light mode
             "&:hover": {
