@@ -20,6 +20,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserProvider.jsx";
 import { useTranslation } from "react-i18next";
+import {getCookie} from "../csrf/csrf.jsx";
 
 const Wrapper = () => {
   const theme = useTheme();
@@ -119,9 +120,42 @@ const Wrapper = () => {
     navigate("/profile");
   };
 
-  const saveWrap = () => {
-    alert("Save functionality to be implemented!");
-  };
+  const saveWrap = async () => {
+      try {
+        const wrapperData = {
+          genres,
+          artists,
+          songs,
+          summary,
+        };
+
+        const response = await axios.post(
+          "/api/user/save-wrap/",
+          {
+            wrapper_data: wrapperData,
+            spotify_id: user.user.spotify_id,
+          },
+          {
+            headers: {
+              "X-CSRFToken": getCookie("csrftoken"),
+            },
+            withCredentials: true,
+          }
+        );
+
+        console.log(response)
+
+        if (response.status === 201) {
+          alert("Spotify Wrapped saved successfully!");
+        } else {
+          console.error("Failed to save Wrapped:", response.data);
+          alert("Failed to save Spotify Wrapped.");
+        }
+      } catch (error) {
+        console.error("Error saving Wrapped:", error);
+        alert("An error occurred while saving Spotify Wrapped.");
+      }
+    };
 
   const shareWrap = () => {
     const formattedText = `

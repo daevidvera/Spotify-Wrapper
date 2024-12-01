@@ -1,24 +1,31 @@
+import os
+from datetime import timezone
 
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.response import Response
-
-import user
-from backend.utils import print_error
-from .models import User, SavedWrap
 from .serializers import UserRegisterSerializer, UserSerializer
-from django.http import JsonResponse
-from django.core.files.base import ContentFile
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from django.http import JsonResponse, HttpResponse, FileResponse
 from io import BytesIO
-from .models import SavedWrap
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from django.core.files.base import ContentFile
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from .models import User, SavedWrap
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from django.core.files.base import ContentFile
+from io import BytesIO
 
 
 # User registration API
@@ -114,71 +121,190 @@ class AuthCheckView(APIView):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def save_wrapper(request):
+def save_wrap(request):
     """
-    Saves a user's wrapper data as a PDF.
+    Saves a user's wrapper data as a stylish PDF with enhanced visual design.
     """
-    # Ensure the request contains the necessary data
-    print("HELLO: ", request)
+    # Register custom fonts (ensure you have these font files)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    pdfmetrics.registerFont(TTFont('Montserrat-Bold', os.path.join(BASE_DIR, 'fonts', 'Montserrat-Bold.ttf')))
+    pdfmetrics.registerFont(TTFont('Roboto-Regular', os.path.join(BASE_DIR, 'fonts', 'Roboto-Regular.ttf')))
+
     wrapper_data = request.data.get('wrapper_data')
     if not wrapper_data:
         return Response({'error': 'wrapper_data is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+    spotify_id = request.data.get('spotify_id')
+    if not spotify_id:
+        return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        display_name = request.data.get('display_name')  # Automatically use the logged-in user
-        genres = wrapper_data.get('genres', [])
-        artists = wrapper_data.get('artists', [])
-        songs = wrapper_data.get('songs', [])
+        user = User.objects.get(spotify_id=spotify_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Generate PDF from the provided data
-        pdf_buffer = BytesIO()
-        c = canvas.Canvas(pdf_buffer, pagesize=letter)
-        c.drawString(100, 750, f"User: {display_name}")
-        c.drawString(100, 730, "Top Genres:")
-        for idx, genre in enumerate(genres, start=1):
-            c.drawString(100, 730 - idx * 20, f"{idx}. {genre}")
+    # Prepare PDF buffer
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
 
-        c.drawString(100, 730 - (len(genres) + 1) * 20, "Top Artists:")
-        for idx, artist in enumerate(artists, start=1):
-            c.drawString(100, 730 - (len(genres) + 1 + idx) * 20, f"{idx}. {artist}")
+    # Styles
+    styles = getSampleStyleSheet()
 
-        c.drawString(100, 730 - (len(genres) + len(artists) + 2) * 20, "Top Songs:")
-        for idx, song in enumerate(songs, start=1):
-            c.drawString(100, 730 - (len(genres) + len(artists) + 2 + idx) * 20,
-                         f"{idx}. {song['title']} - {song['artist']}")
+    # Custom styles
+    title_style = ParagraphStyle(
+        'TitleStyle',
+        parent=styles['Title'],
+        fontName='Montserrat-Bold',
+        fontSize=20,
+        textColor=colors.HexColor('#1DB954'),  # Spotify green
+        spaceAfter=12
+    )
 
-        c.showPage()
-        c.save()
+    section_style = ParagraphStyle(
+        'SectionStyle',
+        parent=styles['Heading2'],
+        fontName='Montserrat-Bold',
+        fontSize=14,
+        textColor=colors.black,
+        spaceAfter=6
+    )
 
-        # Save the generated PDF as a new SavedWrap instance
-        pdf_buffer.seek(0)
-        saved_wrap = SavedWrap.objects.create(
-            user=user,  # Associate wrap with current logged-in user
-            pdf_file=ContentFile(pdf_buffer.read(), name='wrap.pdf')  # Store PDF
-        )
+    item_style = ParagraphStyle(
+        'ItemStyle',
+        parent=styles['Normal'],
+        fontName='Roboto-Regular',
+        fontSize=10,
+        textColor=colors.black
+    )
 
-        return Response({"message": "Wrapper saved successfully!"}, status=status.HTTP_201_CREATED)
+    # Content for PDF
+    content = []
 
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Title
+    content.append(Paragraph(f"{user.display_name}'s Spotify Wrap", title_style))
+    content.append(Spacer(1, 12))
 
+    # Genres Section
+    content.append(Paragraph("Top Genres", section_style))
+    genres_data = [[Paragraph(f"{idx}. {genre}", item_style)] for idx, genre in
+                   enumerate(wrapper_data.get('genres', []), 1)]
+    genres_table = Table(genres_data, colWidths=[450])
+    genres_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    content.append(genres_table)
+    content.append(Spacer(1, 12))
 
+    # Artists Section
+    content.append(Paragraph("Top Artists", section_style))
+    artists_data = [[Paragraph(f"{idx}. {artist}", item_style)] for idx, artist in
+                    enumerate(wrapper_data.get('artists', []), 1)]
+    artists_table = Table(artists_data, colWidths=[450])
+    artists_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.lavender),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    content.append(artists_table)
+    content.append(Spacer(1, 12))
+
+    # Songs Section
+    content.append(Paragraph("Top Songs", section_style))
+    songs_data = [[Paragraph(f"{idx}. {song['title']} - {song['artist']}", item_style)]
+                  for idx, song in enumerate(wrapper_data.get('songs', []), 1)]
+    songs_table = Table(songs_data, colWidths=[450])
+    songs_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.lightblue),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    content.append(songs_table)
+
+    # Build PDF
+    doc.build(content)
+
+    # Save the PDF
+    pdf_buffer.seek(0)
+    SavedWrap.objects.create(
+        user=user,
+        pdf_file=ContentFile(pdf_buffer.read(), name=f'{user.display_name}_spotify_wrap.pdf')
+    )
+
+    return Response(status=status.HTTP_201_CREATED)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_saved_wraps(request):
     """
-    Fetches a list of all saved wraps (PDFs) for the logged-in user.
+    Retrieves all saved wraps for a given user and returns PDF URLs
     """
+    spotify_id = request.query_params.get('spotify_id')
+    if not spotify_id:
+        return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        user = request.user  # Automatically get the logged-in user
-        wraps = SavedWrap.objects.filter(user=user)  # Get all saved wraps for the current user
+        user = User.objects.get(spotify_id=spotify_id)
+        saved_wraps = SavedWrap.objects.filter(user=user).order_by('-created_at')
 
-        if not wraps:
-            return Response({"message": "No saved wraps found."}, status=status.HTTP_404_NOT_FOUND)
+        # Transform queryset to include full PDF URL
+        wrap_data = [{
+            'id': wrap.id,
+            'created_at': wrap.created_at,
+            'pdf_file_url': request.build_absolute_uri(wrap.pdf_file.url)
+        } for wrap in saved_wraps]
 
-        # Return a list of saved wraps with their metadata
-        wraps_data = [{"id": wrap.id, "created_at": wrap.created_at, "pdf_url": wrap.pdf_file.url} for wrap in wraps]
-        return Response({"saved_wraps": wraps_data}, status=status.HTTP_200_OK)
+        return Response(wrap_data)
 
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_wrap(request):
+    """
+    Deletes a specific saved wrap for a given user
+    """
+
+    spotify_id = request.query_params.get('spotify_id')
+    wrap_id = request.query_params.get('wrap_id')
+
+
+    # Validate required parameters
+    if not spotify_id or not wrap_id:
+        return Response({
+            'error': 'spotify_id and wrap_id are required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Find the user
+        user = User.objects.get(spotify_id=spotify_id)
+        print("current user: ", user)
+        # Find and delete the specific wrap
+        wrap = SavedWrap.objects.get(id=wrap_id, user=user)
+
+        if user.pk:
+            saved_wraps = user.saved_wraps.all()
+            print(f"User {user.username} has {saved_wraps.count()} saved wraps.")
+        else:
+            print("User object does not have a primary key.")
+
+        # Optional: Delete the associated PDF file from storage if needed
+        if wrap.pdf_file:
+            wrap.pdf_file.delete()
+
+        # Delete the wrap from the database
+        wrap.delete()
+
+        return Response({
+            'message': 'Wrap successfully deleted'
+        }, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({
+            'error': 'User not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except SavedWrap.DoesNotExist:
+        return Response({
+            'error': 'Wrap not found or does not belong to this user'
+        }, status=status.HTTP_404_NOT_FOUND)

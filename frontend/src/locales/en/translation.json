@@ -10,6 +10,7 @@
   "game": "Game",
   "deleteAccount": "Delete Account",
   "deleteAccountPrompt": "Are you sure you want to delete your account? This action is irreversible.",
+  "deleteWrapPrompt": "Are you sure you want to delete this wrapper? This action is irreversible.",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "myWraps": "My Wraps",

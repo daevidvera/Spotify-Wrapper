@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -41,6 +41,12 @@ SESSION_COOKIE_SAMESITE = None  # Allow cross-origin cookies
 SESSION_COOKIE_SECURE = USING_HTTPS
 CORS_ALLOW_CREDENTIALS = True
 
+# Ensure this directory exists and is writable
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Ensure the directory exists
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 # Application definition
 
 INSTALLED_APPS = [
