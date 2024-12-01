@@ -18,6 +18,8 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { UserContext } from "../contexts/UserProvider";
+import axios from "axios";
+import {getCookie} from "../csrf/csrf.jsx";
 
 function Navbar({ buttons }) {
   const { user, userDataLoading } = useContext(UserContext);
@@ -40,8 +42,23 @@ function Navbar({ buttons }) {
     setDrawerOpen(false);
   };
 
-  const navigateSignOut = () => {
-    navigate("/login");
+  const navigateSignOut = async () => {
+    try {
+      const response = await axios.post("/api/user/logout/", {}, {
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+      });
+
+      if (response.status === 200) {
+        navigate("/login");
+      } else {
+        console.error("Failed to log out");
+      }
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
   };
 
   const navigateContact = () => {

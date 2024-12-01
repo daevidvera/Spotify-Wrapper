@@ -85,6 +85,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        request.session.clear()
         logout(request)
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
     
