@@ -54,7 +54,7 @@ function RequireAuth({children}) {
             </Stack>
         )
     else if(!isAuthorized)
-        return <Navigate to='/signin' />
+        return <Navigate to='/signin'/>
     else
         return children
 }
