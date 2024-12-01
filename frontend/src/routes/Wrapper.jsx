@@ -239,22 +239,25 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
       </Fab>
 
       {/* Scroll Down Button */}
-      <Fab
-        sx={{
-          position: "fixed",
-          bottom: isMobile ? "12px" : "24px",
-          right: isMobile ? "12px" : "24px",
-          backgroundColor: currentTheme.buttonColor,
-          color: theme.palette.common.white,
-          "&:hover": {
-            color: currentTheme.hoverTextColor,
-            backgroundColor: currentTheme.hoverBackgroundColor,
-          },
-        }}
-        onClick={() => scrollToSection("down")}
-      >
-        <ArrowDownwardIcon />
-      </Fab>
+     {/* Scroll Down Button */}
+      {!isMobile && (
+        <Fab
+          sx={{
+            position: "fixed",
+            bottom: "24px",
+            right: "24px",
+            backgroundColor: currentTheme.buttonColor,
+            color: theme.palette.common.white,
+            "&:hover": {
+              color: currentTheme.hoverTextColor,
+              backgroundColor: currentTheme.hoverBackgroundColor,
+            },
+          }}
+          onClick={() => scrollToSection("down")}
+        >
+          <ArrowDownwardIcon />
+        </Fab>
+      )}
 
       {/* Sections */}
       {[
@@ -524,6 +527,35 @@ ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).joi
       >
         {t("share")}
       </Button>
+      
+       {/* Time Range Button */}
+      <Button
+        variant="contained"
+        sx={{
+          backgroundColor: currentTheme.buttonColor,
+          color: currentTheme.textColor,
+          padding: isMobile ? "8px 12px" : "10px 16px", 
+          fontSize: isMobile ? "0.75rem" : "1rem", 
+          "&:hover": {
+            backgroundColor: currentTheme.hoverBackgroundColor,
+            color: currentTheme.hoverTextColor,
+          },
+          "&:focus": {
+            backgroundColor: currentTheme.hoverBackgroundColor, 
+            color: currentTheme.hoverTextColor,
+          },
+        }}
+        onClick={() => {
+          const ranges = ["short_term", "medium_term", "long_term"];
+          const currentIndex = ranges.indexOf(timeRange);
+          const nextIndex = (currentIndex + 1) % ranges.length; // Cycle through ranges
+          setTimeRange(ranges[nextIndex]); 
+        }}
+      >
+        {t(` ${timeRange.replace("_", " ").toUpperCase()}`)}
+      </Button>
+
+      
     </Box>
     </Box>
   );
