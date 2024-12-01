@@ -165,8 +165,8 @@ const Wrapper = () => {
       }
     };
 
-  const shareWrap = () => {
-    const formattedText = `
+    const shareWrap = () => {
+      const formattedText = `
 My 2024 Wrapped!      
 
 Top Genres:
@@ -179,16 +179,13 @@ Top Songs:
 ${songs.map((song, index) => `${index + 1}. ${song.title} - ${song.artist}`).join("\n")}
 `;
 
-    navigator.clipboard
-      .writeText(formattedText.trim())
-      .then(() => {
-        alert("Summary copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
-        alert("Failed to copy summary.");
-      });
-  };
+      const encodedText = encodeURIComponent(formattedText.trim());
+      const xShareUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
+
+      // Open X (Twitter) in a new tab to create a post
+      window.open(xShareUrl, '_blank');
+    };
+
 
   if (loading) {
     return (
