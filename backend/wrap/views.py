@@ -24,10 +24,10 @@ client = OpenAI()
 OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def fetch_spotify_data(endpoint, access_token, params=None):
+def fetch_spotify_data(endpoint, access_token, params=None, time_range="medium_term"):
     try:
         response = requests.get(
-            f"{SPOTIFY_API_URL}/{endpoint}",
+            f"{SPOTIFY_API_URL}/{endpoint}?time_range={time_range}",
             headers={"Authorization": f"Bearer {access_token}"},
             params=params,
         )
@@ -108,6 +108,10 @@ def top_genres(request):
     if not spotify_id:
         return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+    time_range = request.query_params.get('time_range')
+    if not time_range:
+        time_range = "medium_term"
+
     # Fetch the user based on the spotify_id
     try:
         user = User.objects.get(spotify_id=spotify_id)
@@ -120,7 +124,7 @@ def top_genres(request):
         return Response({'error': 'User does not have a valid access token'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Fetch Spotify data for top artists to extract genres
-    data = fetch_spotify_data("me/top/artists", access_token, params={"limit": 50})
+    data = fetch_spotify_data("me/top/artists", access_token, params={"limit": 50}, time_range=time_range)
     if not data:
         return Response({'error': 'Failed to retrieve top artists for genres'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -139,6 +143,10 @@ def top_songs(request):
     if not spotify_id:
         return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+    time_range = request.query_params.get('time_range')
+    if not time_range:
+        time_range = "medium_term"
+
     try:
         user = User.objects.get(spotify_id=spotify_id)
     except User.DoesNotExist:
@@ -149,7 +157,7 @@ def top_songs(request):
         return Response({'error': 'User does not have a valid access token'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Fetch Spotify data
-    data = fetch_spotify_data("me/top/tracks", access_token, params={"limit": 5})
+    data = fetch_spotify_data("me/top/tracks", access_token, params={"limit": 5}, time_range=time_range)
     if not data:
         return Response({'error': 'Failed to retrieve top tracks'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -167,6 +175,10 @@ def get_summary(request):
     spotify_id = request.query_params.get('spotify_id')
     if not spotify_id:
         return Response({'error': 'spotify_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    time_range = request.query_params.get('time_range')
+    if not time_range:
+        time_range = "medium_term"
 
     try:
         user = User.objects.get(spotify_id=spotify_id)

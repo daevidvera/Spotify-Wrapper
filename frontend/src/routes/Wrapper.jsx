@@ -33,6 +33,7 @@ const Wrapper = () => {
   const [songs, setSongs] = useState([]);
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState("medium_term");
   const { user, holiday } = useContext(UserContext);
 
   const isDarkMode = theme.palette.mode === "dark";
@@ -73,15 +74,24 @@ const Wrapper = () => {
         const [songsRes, artistsRes, genresRes] = await Promise.all([
           axios.get("api/wrap/top-songs", {
             withCredentials: true,
-            params: { spotify_id: user.spotify_id },
+            params: {
+                spotify_id: user.spotify_id,
+                time_range: timeRange,
+            },
           }),
           axios.get("api/wrap/top-artists", {
             withCredentials: true,
-            params: { spotify_id: user.spotify_id },
+            params: {
+                spotify_id: user.spotify_id,
+                time_range: timeRange,
+            },
           }),
           axios.get("api/wrap/top-genres", {
             withCredentials: true,
-            params: { spotify_id: user.spotify_id },
+            params: {
+                spotify_id: user.spotify_id,
+                time_range: timeRange,
+            },
           }),
         ]);
         setSongs(songsRes.data || []);
