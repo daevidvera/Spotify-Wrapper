@@ -105,7 +105,7 @@ const Wrapper = () => {
     };
 
     fetchData();
-  }, [user.spotify_id]);
+  }, [user.spotify_id, timeRange]);
 
   const scrollToSection = (direction) => {
     if (!wrapperRef.current) return;
