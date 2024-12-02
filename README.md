@@ -59,11 +59,7 @@ Spotify Wrapper is a web application that allows users to gain insights into the
    check discord for .env
 5. Run database migrations:
    python manage.py migrate
-6. Start Redis (required for Celery):
-   redis-server
-   Start the Celery worker:
-   celery -A backend worker --loglevel=info
-7. Start the backend server:
+6. Start the backend server:
    python manage.py runserver
 
 ### Frontend Setup:
