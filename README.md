@@ -47,7 +47,7 @@ Spotify Wrapper is a web application that allows users to gain insights into the
 
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/daevidvera/Spotify-Wrapper.git
    cd Spotify-Wrapper/backend
    ```
 2. Set up a virtual environment:
@@ -58,8 +58,10 @@ Spotify Wrapper is a web application that allows users to gain insights into the
 4. Configure environment variables: Create a .env file in the backend directory with the following:
    check discord for .env
 5. Run database migrations:
+   python manage.py make migrations
+6. Apply migrations:
    python manage.py migrate
-6. Start the backend server:
+7. Start the backend server:
    python manage.py runserver
 
 ### Frontend Setup:
