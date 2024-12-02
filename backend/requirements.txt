@@ -1,0 +1,11 @@
+Django>=5.1.3
+djangorestframework
+python-dotenv
+requests
+openai
+celery
+redis
+reportlab
+django-cors-headers
+django-celery-beat
+python-decouple
