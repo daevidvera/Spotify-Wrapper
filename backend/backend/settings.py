@@ -9,18 +9,17 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
@@ -38,7 +37,16 @@ FRONT_END_ORIGIN = config('FRONT_END_ORIGIN')
 
 ALLOWED_HOSTS = []
 
+SESSION_COOKIE_SAMESITE = None  # Allow cross-origin cookies
+SESSION_COOKIE_SECURE = USING_HTTPS
+CORS_ALLOW_CREDENTIALS = True
 
+# Ensure this directory exists and is writable
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Ensure the directory exists
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,18 +58,21 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "authentication",
-    "rest_framework"
+    "user",
+    "wrap",
+    "rest_framework",
+    "django_celery_beat"
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # Move this up
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -95,6 +106,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'user.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -140,28 +152,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configure CORS
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    FRONT_END_ORIGIN
-]
 
+CORS_ALLOWED_ORIGINS = [
+    FRONT_END_ORIGIN,
+]
 CORS_ALLOW_HEADERS = [
     'Authorization',
     'Content-Type',
 ]
 
-# Configure DRF to use JWT Authentication
+CSRF_TRUSTED_ORIGINS = [
+    FRONT_END_ORIGIN
+]
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
+}
 
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-#     'ROTATE_REFRESH_TOKENS': 
-# }
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use Redis as the message broker
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

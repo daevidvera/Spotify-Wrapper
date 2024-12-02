@@ -8,8 +8,12 @@ local_settings.py
 # Database
 db.sqlite3
 
+# Media files
+media/user_wraps/
+
 # Virtual environments
-.env
+backend/backend/.env
+frontend/.env
 .venv/
 venv/
 
@@ -46,7 +50,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
+backend/backend/.env/
 build/
 develop-eggs/
 dist/
@@ -77,3 +81,10 @@ coverage.xml
 
 # PyBuilder
 target/
+
+# Python Version
+.python-version
+
+# Nodes modules
+node_modules/
+frontend/node_modules/
