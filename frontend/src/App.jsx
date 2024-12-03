@@ -18,6 +18,12 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import { LanguageProvider, useLanguage } from './contexts/LanguageProvider.jsx';
 import LanguageMenu from "./routes/LanguageMenu.jsx";
+import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import theme from './Theme'
+import Login from './routes/Login'
+import { ThemeProvider } from '@mui/material'
+import DarkMode from './DarkMode'
 
 
 function App() {
@@ -66,6 +72,13 @@ function App() {
             {/* Language Dropdown Button */}
             <LanguageMenu />
           </Box>
+      <DarkMode>
+      <Routes>
+        <Route path='/login' element={<Login />}/>
+        
+      </Routes>
+      </DarkMode>
+  )
 
           {/* Application Routes */}
           <Routes>
