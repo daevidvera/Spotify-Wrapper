@@ -33,7 +33,7 @@ Spotify Wrapper is a web application that allows users to gain insights into the
 
 ### Styling:
 
-- Custom CSS
+- Material UI 
 
 ## Installation
 
